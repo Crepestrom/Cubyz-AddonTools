@@ -171,4 +171,3 @@ with open(filepath, "w") as f:
 ItemZonFormat = baseZonObject()
 readFormatFile(ItemZonFormat)
 
-
