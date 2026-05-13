@@ -1,0 +1,5 @@
+.{
+	.ErrorMissingName = 0,
+	.ErrorMissingName = .{
+	},
+}
