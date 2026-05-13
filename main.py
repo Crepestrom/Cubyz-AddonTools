@@ -9,15 +9,15 @@ class baseZonObject:
 	children = []
 
 	def writeWithChildren(self):
-		tempTextBuffer = []
+		tempListBuffer = []
 
-		tempTextBuffer.append(".{")
+		tempListBuffer.append(".{")
 
 		for child in self.children:
-			tempTextBuffer = child.writeWithChildren(tempTextBuffer, "	")
+			tempListBuffer = child.writeWithChildren(tempListBuffer, "	")
 
-		tempTextBuffer.append("}")
-		return tempTextBuffer
+		tempListBuffer.append("}")
+		return tempListBuffer
 	
 class zonObject:
 
@@ -26,15 +26,40 @@ class zonObject:
 
 	def writeWithChildren(self, givenChildren, tabText):
 		
-		tempTextBuffer = givenChildren
+		tempListBuffer = givenChildren
 
-		tempTextBuffer.append(tabText + "." + self.name + " = .{")
+		tempListBuffer.append(tabText + "." + self.name + " = .{")
 
 		for child in self.children:
-			tempTextBuffer = child.writeWithChildren(tempTextBuffer, tabText +  "	")
+			tempListBuffer = child.writeWithChildren(tempListBuffer, tabText +  "	")
 
-		tempTextBuffer.append(tabText + "},")
-		return tempTextBuffer
+		tempListBuffer.append(tabText + "},")
+		return tempListBuffer
+	
+class zonArray:
+
+	name = "ErrorMissingName"
+	children = []
+
+	def writeWithChildren(self, givenChildren, tabText):
+		
+		tempListBuffer = givenChildren
+		tempTextBuffer = ""
+		tempTextBuffer = tabText + "{" + tempTextBuffer
+
+		childCounter = 0
+
+		for child in self.children:
+			if childCounter == 0:
+				tempTextBuffer = tempTextBuffer + child
+			else:
+				tempTextBuffer = ", " + tempTextBuffer + child
+			childCounter += 1
+
+		tempTextBuffer = tempTextBuffer + "},"
+
+		tempListBuffer.append(tempTextBuffer)
+		return tempListBuffer
 
 
 class zonValue:
@@ -44,66 +69,106 @@ class zonValue:
 
 	def writeWithChildren(self, givenChildren, tabText):
 		
-		tempTextBuffer = givenChildren
+		tempListBuffer = givenChildren
 
-		tempTextBuffer.append(tabText + "." + self.name + " = " + str(self.value) + ",")
+		tempListBuffer.append(tabText + "." + self.name + " = " + str(self.value) + ",")
 
-		return tempTextBuffer
+		return tempListBuffer
 	
 def InterperetLine(Line):
     
-	CurrentState = "Tabs"
-	NameBuffer = ""
-	VarBuffer = ""
+	currentState = "Tabs"
+	nameBuffer = ""
+	varBuffer = ""
+	isZon = False
 
 	for Character in Line:
-		if CurrentState == "Tabs":
-			if Character != " ":
-				CurrentState = "ReadName"
-			else:
-				VarBuffer = VarBuffer + Character #catches the end }, of zon files
-		elif CurrentState == "ReadName":
-			if Character == " ":
-				CurrentState = "InbetweenVarRead"
-			else:
-				NameBuffer = NameBuffer + Character
-		elif CurrentState == "InbetweenVarRead":
-			if (Character != " ") and (Character != "="):
-				CurrentState = "ReadVar"
 
-		if CurrentState == "ReadVar":
+		if (Character != "}") or (Character != "{"): # zon detector
+			isZon = True
+
+		if currentState == "Tabs":
+			if Character != "	":
+				currentState = "ReadName"
+		
+		if currentState == "ReadName":
+			if Character == " ":
+				currentState = "InbetweenVarRead"
+			else:
+				nameBuffer = nameBuffer + Character
+		elif currentState == "InbetweenVarRead":
+			if (Character != " ") and (Character != "="):
+				currentState = "ReadVar"
+
+		if currentState == "ReadVar":
 			if Character == ",":
-				CurrentState = "EndValue"
+				currentState = "EndValue"
 				break
 			else:
-				VarBuffer = VarBuffer + Character
+				varBuffer = varBuffer + Character
+	# end of text processing
+	if nameBuffer == "},":
+		nameBuffer = ""
+		varBuffer = "},"
 
-	return NameBuffer, VarBuffer
+	return nameBuffer, varBuffer, isZon
 
+def readFormatZon(lineList, startingLine, parentZon):
 
-def readFormatFile(BaseZonObject):
+	lineNumber = startingLine
+
+	while lineNumber < len(lineList):
+		line = lineList[lineNumber]
+
+		varName, varType, isZon = InterperetLine(line)
+
+		if varType == "tag":
+			newZonObj = zonArray()
+			newZonObj.name = varName
+			parentZon.children.append(newZonObj)
+		elif varType == "0":
+			newZonObj = zonValue()
+			newZonObj.name = varName
+			parentZon.children.append(newZonObj)
+		elif varType == "image":
+			newZonObj = zonValue()
+			newZonObj.name = varName
+			newZonObj.value = ""
+			parentZon.children.append(newZonObj)
+		
+		if varType == "},":
+			break
+
+		lineNumber += 1
+
+def readFormatFile(baseZonObject):
 
 	with open("zonTypes/item.txt", "r") as file:
+		
+		documentLines = []
+		CurrentZonObject = baseZonObject
+		
 		while True:
+
 			line = file.readline()
 			if not line:
 				break
+			
+			documentLines.append(line.strip())
 
-			VarName, VarType = InterperetLine(line)
-
-			if VarType == "0":
-
-			print(VarName + VarType)
+		return readFormatZon(documentLines, 0, CurrentZonObject)
 
 
 textOBJ = baseZonObject()
-textOBJ.children = [zonValue(), zonObject()]
+textOBJ.children = [zonValue(), zonObject(), zonArray()]
 actualText = textOBJ.writeWithChildren()
 
 with open(filepath, "w") as f:
-    for line in actualText:
-        f.write(line)
-        f.write('\n')
+	for line in actualText:
+		f.write(line)
+		f.write('\n')
 
-ItemFormat = baseZonObject()
-readFormatFile(ItemFormat)
+ItemZonFormat = baseZonObject()
+readFormatFile(ItemZonFormat)
+
+

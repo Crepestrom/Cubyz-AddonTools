@@ -1,5 +1,3 @@
-.tags = .{.tag},
-.texture = "string.png",
+.tags = tag
+.texture = image,
 .food = 0,
-.food = 0.0,
-
