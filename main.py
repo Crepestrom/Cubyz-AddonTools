@@ -1,162 +1,98 @@
+from zon_object_types import *
+from formatting import *
+
+import sys
+
+import sys
+from PyQt6.QtGui import QColor, QPalette
+from PyQt6.QtWidgets import (
+	QApplication,
+	QHBoxLayout,
+	QMainWindow,
+	QPushButton,
+	QStackedLayout,
+	QVBoxLayout,
+	QWidget,
+	QLineEdit,
+)
+
+class Color(QWidget):
+	def __init__(self, color):
+		super().__init__()
+		self.setAutoFillBackground(True)
+
+		palette = self.palette()
+		palette.setColor(QPalette.ColorRole.Window, QColor(color))
+		self.setPalette(palette)
+
+
+
+class MainWindow(QMainWindow):
+	def __init__(self):
+		super().__init__()
+		self.setWindowTitle("My App")
+
+		pagelayout = QVBoxLayout()
+
+		self.addInputLine("test", pagelayout)
+		self.addInputLine("test1", pagelayout)
+		self.addInputLine("test2", pagelayout)
+		self.addInputLine("test3", pagelayout)
+		self.addInputLine("test4", pagelayout)
+
+		widget = QWidget()
+		widget.setLayout(pagelayout)
+		self.setCentralWidget(widget)
+		pagelayout.addWidget(Color("red"))
+
+	def text_changed(self, name, parentButton):
+		print("Selection changed"+ name)
+		txtInput = QLineEdit()
+		txtInput.setPlaceholderText("extra")
+		parentButton.addWidget(txtInput)
+
+	def addInputLine(self, Name, Layout):
+
+		#self.addArrayZonInput(Name, Layout)
+	
+	
+	def addArrayZonInput(self, defaultText, baseParentLayout):
+		txtInputsLayout = QHBoxLayout()
+		self.createSingleArrayInput(defaultText, txtInputsLayout)
+		
+		baseParentLayout.addLayout(txtInputsLayout)
+
+
+
+	def checkArrayZonChildren(self, defaultText, parentLayout):
+		
+		for i in range(parentLayout.count()):
+			childButton = parentLayout.itemAt(0)
+			print(childButton)
+			if (childButton.text() == "") and (i != parentLayout.count()):
+				parentLayout.removeWidget(childButton)
+				print("removeOldthings")
+			if (childButton.text() != "") and (i == parentLayout.count()):
+				print("attempt to create")
+				self.createSingleArrayInput(defaultText, parentLayout)
+	
+	def createSingleArrayInput(self, defaultText, parentLayout):
+		txtInput = QLineEdit()
+		txtInput.setPlaceholderText(defaultText)
+		txtInput.textChanged.connect(lambda: self.checkArrayZonChildren(defaultText, parentLayout))
+		parentLayout.addWidget(txtInput)
+
+
+app = QApplication(sys.argv)
+window = MainWindow()
+window.show()
+app.exec()
+
 
 
 filename = "test4"
 filepath = "Output/" + filename + ".zig.zon"
 
-
-class baseZonObject:
-
-	children = []
-
-	def writeWithChildren(self):
-		tempListBuffer = []
-
-		tempListBuffer.append(".{")
-
-		for child in self.children:
-			tempListBuffer = child.writeWithChildren(tempListBuffer, "	")
-
-		tempListBuffer.append("}")
-		return tempListBuffer
-	
-class zonObject:
-
-	name = "ErrorMissingName"
-	children = []
-
-	def writeWithChildren(self, givenChildren, tabText):
-		
-		tempListBuffer = givenChildren
-
-		tempListBuffer.append(tabText + "." + self.name + " = .{")
-
-		for child in self.children:
-			tempListBuffer = child.writeWithChildren(tempListBuffer, tabText +  "	")
-
-		tempListBuffer.append(tabText + "},")
-		return tempListBuffer
-	
-class zonArray:
-
-	name = "ErrorMissingName"
-	children = []
-
-	def writeWithChildren(self, givenChildren, tabText):
-		
-		tempListBuffer = givenChildren
-		tempTextBuffer = ""
-		tempTextBuffer = tabText + "{" + tempTextBuffer
-
-		childCounter = 0
-
-		for child in self.children:
-			if childCounter == 0:
-				tempTextBuffer = tempTextBuffer + child
-			else:
-				tempTextBuffer = ", " + tempTextBuffer + child
-			childCounter += 1
-
-		tempTextBuffer = tempTextBuffer + "},"
-
-		tempListBuffer.append(tempTextBuffer)
-		return tempListBuffer
-
-
-class zonValue:
-
-	name = "ErrorMissingName"
-	value = 0
-
-	def writeWithChildren(self, givenChildren, tabText):
-		
-		tempListBuffer = givenChildren
-
-		tempListBuffer.append(tabText + "." + self.name + " = " + str(self.value) + ",")
-
-		return tempListBuffer
-	
-def InterperetLine(Line):
-    
-	currentState = "Tabs"
-	nameBuffer = ""
-	varBuffer = ""
-	isZon = False
-
-	for Character in Line:
-
-		if (Character != "}") or (Character != "{"): # zon detector
-			isZon = True
-
-		if currentState == "Tabs":
-			if Character != "	":
-				currentState = "ReadName"
-		
-		if currentState == "ReadName":
-			if Character == " ":
-				currentState = "InbetweenVarRead"
-			else:
-				nameBuffer = nameBuffer + Character
-		elif currentState == "InbetweenVarRead":
-			if (Character != " ") and (Character != "="):
-				currentState = "ReadVar"
-
-		if currentState == "ReadVar":
-			if Character == ",":
-				currentState = "EndValue"
-				break
-			else:
-				varBuffer = varBuffer + Character
-	# end of text processing
-	if nameBuffer == "},":
-		nameBuffer = ""
-		varBuffer = "},"
-
-	return nameBuffer, varBuffer, isZon
-
-def readFormatZon(lineList, startingLine, parentZon):
-
-	lineNumber = startingLine
-
-	while lineNumber < len(lineList):
-		line = lineList[lineNumber]
-
-		varName, varType, isZon = InterperetLine(line)
-
-		if varType == "tag":
-			newZonObj = zonArray()
-			newZonObj.name = varName
-			parentZon.children.append(newZonObj)
-		elif varType == "0":
-			newZonObj = zonValue()
-			newZonObj.name = varName
-			parentZon.children.append(newZonObj)
-		elif varType == "image":
-			newZonObj = zonValue()
-			newZonObj.name = varName
-			newZonObj.value = ""
-			parentZon.children.append(newZonObj)
-		
-		if varType == "},":
-			break
-
-		lineNumber += 1
-
-def readFormatFile(baseZonObject):
-
-	with open("zonTypes/item.txt", "r") as file:
-		
-		documentLines = []
-		CurrentZonObject = baseZonObject
-		
-		while True:
-
-			line = file.readline()
-			if not line:
-				break
-			
-			documentLines.append(line.strip())
-
-		return readFormatZon(documentLines, 0, CurrentZonObject)
 
 
 textOBJ = baseZonObject()
