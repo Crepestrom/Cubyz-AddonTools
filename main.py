@@ -32,15 +32,17 @@ class MainWindow(QMainWindow):
 	def __init__(self, givenFormat):
 		super().__init__()
 		self.setWindowTitle("My App")
+		
+		editorVarsLayout = QVBoxLayout()
+		self.readFormat(givenFormat, editorVarsLayout)
 
 		editorLayout = QVBoxLayout()
-
-		self.readFormat(givenFormat, editorLayout)
-
+		editorLayout.addLayout(editorVarsLayout)
+		saveZonButton = QPushButton("test")
+		editorLayout.addWidget(saveZonButton)
 		widget = QWidget()
 		widget.setLayout(editorLayout)
 		self.setCentralWidget(widget)
-		editorLayout.addWidget(Color("red"))
 
 	def readFormat(self, givenFormat, baseParentLayout):
 		for child in givenFormat:
@@ -69,7 +71,7 @@ class MainWindow(QMainWindow):
 		self.createSingleArrayInput(defaultText, txtInputsLayout)
 		
 		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
-		namelabel = QLabel("." + name + " = ")
+		namelabel = QLabel(name + " = ")
 		lineLayout.addWidget(namelabel)
 		lineLayout.addLayout(txtInputsLayout)
 
@@ -100,9 +102,11 @@ class MainWindow(QMainWindow):
 		txtInput.setPlaceholderText(defaultText)
 		txtInput.textChanged.connect(lambda: self.checkArrayZonChildren(defaultText, parentLayout))
 		parentLayout.addWidget(txtInput)
-
-
-
+	
+	def readEditorOutputZon(self, givenEditorVarUi):
+		print("not made yet")
+		for i in range(givenEditorVarUi.count()):
+			childButton = givenEditorVarUi.itemAt(i).widget()
 
 
 filename = "test4"
