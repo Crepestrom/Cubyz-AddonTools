@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
 		super().__init__()
 		self.setWindowTitle("My App")
 		
+		self.editorVars
 		editorVarsLayout = QVBoxLayout()
 		self.readFormat(givenFormat, editorVarsLayout)
 
@@ -47,37 +48,12 @@ class MainWindow(QMainWindow):
 	def readFormat(self, givenFormat, baseParentLayout):
 		for child in givenFormat:
 			if isinstance(child, zonValue):
-				self.addZonValueInput(child.name, baseParentLayout, child.value)
+				newZonValue = uiZonValue()
+				newZonValue.addZonValueInput(child.name, baseParentLayout, child.value)
 			elif isinstance(child, zonArray):
-				print()
-				self.addZonArrayInput(child.name, baseParentLayout, child.children[0])
+				newZonArray = uiZonArray()
+				newZonArray.addZonArrayInput(child.name, baseParentLayout, child.children[0])
 
-	def addZonValueInput(self, name, baseParentLayout, defaultText):
-		txtInputsLayout = QHBoxLayout()
-		
-		txtInput = QLineEdit()
-		txtInput.setPlaceholderText(defaultText)
-		txtInputsLayout.addWidget(txtInput)
-
-		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
-		namelabel = QLabel("." + name + " = ")
-		lineLayout.addWidget(namelabel)
-		lineLayout.addLayout(txtInputsLayout)
-
-		baseParentLayout.addLayout(lineLayout)
-
-	def addZonArrayInput(self, defaultText, baseParentLayout, name):
-		txtInputsLayout = QHBoxLayout()
-		self.createSingleArrayInput(defaultText, txtInputsLayout)
-		
-		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
-		namelabel = QLabel(name + " = ")
-		lineLayout.addWidget(namelabel)
-		lineLayout.addLayout(txtInputsLayout)
-
-		baseParentLayout.addLayout(lineLayout)
-	
-	# end of button aditions
 
 	
 	def checkArrayZonChildren(self, defaultText, parentLayout):
@@ -97,17 +73,43 @@ class MainWindow(QMainWindow):
 		for widget in widgetsRemovalList:
 			widget.deleteLater()
 	
-	def createSingleArrayInput(self, defaultText, parentLayout):
-		txtInput = QLineEdit()
-		txtInput.setPlaceholderText(defaultText)
-		txtInput.textChanged.connect(lambda: self.checkArrayZonChildren(defaultText, parentLayout))
-		parentLayout.addWidget(txtInput)
-	
 	def readEditorOutputZon(self, givenEditorVarUi):
 		print("not made yet")
 		for i in range(givenEditorVarUi.count()):
 			childButton = givenEditorVarUi.itemAt(i).widget()
 
+class uiZonValue:
+	def addZonValueInput(self, name, baseParentLayout, defaultText):
+		txtInputsLayout = QHBoxLayout()
+		
+		self.txtInput = QLineEdit()
+		self.txtInput.setPlaceholderText(defaultText)
+		txtInputsLayout.addWidget(self.txtInput)
+
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel("." + name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(txtInputsLayout)
+
+		baseParentLayout.addLayout(lineLayout)
+
+class uiZonArray:
+	def addZonArrayInput(self, defaultText, baseParentLayout, name):
+		txtInputsLayout = QHBoxLayout()
+		self.createSingleArrayInput(defaultText, txtInputsLayout)
+		
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel(name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(txtInputsLayout)
+
+		baseParentLayout.addLayout(lineLayout)
+
+	def createSingleArrayInput(self, defaultText, parentLayout):
+		txtInput = QLineEdit()
+		txtInput.setPlaceholderText(defaultText)
+		txtInput.textChanged.connect(lambda: self.checkArrayZonChildren(defaultText, parentLayout))
+		parentLayout.addWidget(txtInput)
 
 filename = "test4"
 filepath = "Output/" + filename + ".zig.zon"
