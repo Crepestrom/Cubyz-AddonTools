@@ -14,6 +14,7 @@ from PyQt6.QtWidgets import (
 	QVBoxLayout,
 	QWidget,
 	QLineEdit,
+	QLabel,
 )
 
 class Color(QWidget):
@@ -28,53 +29,71 @@ class Color(QWidget):
 
 
 class MainWindow(QMainWindow):
-	def __init__(self):
+	def __init__(self, givenFormat):
 		super().__init__()
 		self.setWindowTitle("My App")
 
-		pagelayout = QVBoxLayout()
+		editorLayout = QVBoxLayout()
 
-		self.addInputLine("test", pagelayout)
-		self.addInputLine("test1", pagelayout)
-		self.addInputLine("test2", pagelayout)
-		self.addInputLine("test3", pagelayout)
-		self.addInputLine("test4", pagelayout)
+		self.readFormat(givenFormat, editorLayout)
 
 		widget = QWidget()
-		widget.setLayout(pagelayout)
+		widget.setLayout(editorLayout)
 		self.setCentralWidget(widget)
-		pagelayout.addWidget(Color("red"))
+		editorLayout.addWidget(Color("red"))
 
-	def text_changed(self, name, parentButton):
-		print("Selection changed"+ name)
+	def readFormat(self, givenFormat, baseParentLayout):
+		for child in givenFormat:
+			if isinstance(child, zonValue):
+				self.addZonValueInput(child.name, baseParentLayout, child.value)
+			elif isinstance(child, zonArray):
+				print()
+				self.addZonArrayInput(child.name, baseParentLayout, child.children[0])
+
+	def addZonValueInput(self, name, baseParentLayout, defaultText):
+		txtInputsLayout = QHBoxLayout()
+		
 		txtInput = QLineEdit()
-		txtInput.setPlaceholderText("extra")
-		parentButton.addWidget(txtInput)
+		txtInput.setPlaceholderText(defaultText)
+		txtInputsLayout.addWidget(txtInput)
 
-	def addInputLine(self, Name, Layout):
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel("." + name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(txtInputsLayout)
 
-		#self.addArrayZonInput(Name, Layout)
-	
-	
-	def addArrayZonInput(self, defaultText, baseParentLayout):
+		baseParentLayout.addLayout(lineLayout)
+
+	def addZonArrayInput(self, defaultText, baseParentLayout, name):
 		txtInputsLayout = QHBoxLayout()
 		self.createSingleArrayInput(defaultText, txtInputsLayout)
 		
-		baseParentLayout.addLayout(txtInputsLayout)
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel("." + name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(txtInputsLayout)
 
+		baseParentLayout.addLayout(lineLayout)
+	
+	# end of button aditions
 
-
+	
 	def checkArrayZonChildren(self, defaultText, parentLayout):
 		
+		widgetsRemovalList = []
+
 		for i in range(parentLayout.count()):
-			childButton = parentLayout.itemAt(0)
-			print(childButton)
-			if (childButton.text() == "") and (i != parentLayout.count()):
-				parentLayout.removeWidget(childButton)
+			childButton = parentLayout.itemAt(i).widget()
+			print(i)
+			if (childButton.text() == "") and (i + 1 != parentLayout.count()):
+				widgetsRemovalList.append(childButton)
 				print("removeOldthings")
-			if (childButton.text() != "") and (i == parentLayout.count()):
+			elif (childButton.text() != "") and (i + 1 == parentLayout.count()):
 				print("attempt to create")
 				self.createSingleArrayInput(defaultText, parentLayout)
+		
+		for widget in widgetsRemovalList:
+			widget.deleteLater()
 	
 	def createSingleArrayInput(self, defaultText, parentLayout):
 		txtInput = QLineEdit()
@@ -83,10 +102,6 @@ class MainWindow(QMainWindow):
 		parentLayout.addWidget(txtInput)
 
 
-app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
-app.exec()
 
 
 
@@ -106,4 +121,11 @@ with open(filepath, "w") as f:
 
 ItemZonFormat = baseZonObject()
 readFormatFile(ItemZonFormat)
+
+print("running app")
+
+app = QApplication(sys.argv)
+window = MainWindow(ItemZonFormat.children)
+window.show()
+app.exec()
 

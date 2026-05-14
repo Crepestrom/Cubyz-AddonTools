@@ -47,19 +47,19 @@ def readFormatZon(lineList, startingLine, parentZon):
 
 		varName, varType, isZon = InterperetFormattingLine(line)
 
-		if varType == "tag":
+		if varType == ".tag":
 			newZonObj = zonArray()
 			newZonObj.name = varName
+			newZonObj.children = [varType]
 			parentZon.children.append(newZonObj)
-		elif varType == "0":
+		elif (varType == "0") or (varType == '"image.png"'):
 			newZonObj = zonValue()
 			newZonObj.name = varName
+			newZonObj.value = varType
 			parentZon.children.append(newZonObj)
-		elif varType == "image":
-			newZonObj = zonValue()
-			newZonObj.name = varName
-			newZonObj.value = ""
-			parentZon.children.append(newZonObj)
+		else:
+			varType = str(varType)
+			print("Formatter Read Error: could not interperet the varType: {varType}")
 		
 		if varType == "},":
 			break
@@ -82,3 +82,5 @@ def readFormatFile(baseZonObject):
 			documentLines.append(line.strip())
 
 		return readFormatZon(documentLines, 0, CurrentZonObject)
+
+print("imported formatting.py")

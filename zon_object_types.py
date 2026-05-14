@@ -68,3 +68,5 @@ class zonValue:
 		tempListBuffer.append(tabText + "." + self.name + " = " + str(self.value) + ",")
 
 		return tempListBuffer
+	
+print("imported zon_object_types.py")
