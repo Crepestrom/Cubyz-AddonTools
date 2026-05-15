@@ -120,10 +120,10 @@ class uiZonArray:
 	name = "ErrorNotDefined"
 	txtInputList = []
 
-	def addZonArrayInput(self, defaultText, baseParentLayout, name):
+	def addZonArrayInput(self, name, baseParentLayout, defaultText):
 		txtInputsLayout = QHBoxLayout()
 		self.createSingleArrayInput(defaultText, txtInputsLayout)
-		
+        
 		self.name = name
 		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
 		namelabel = QLabel(name + " = ")

@@ -1,5 +1,3 @@
 .{
-	..tag = {WAD},
-	.texture = sad,
-	.food = d,
+	.tags = {gg},
 }
