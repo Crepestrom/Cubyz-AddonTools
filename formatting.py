@@ -20,6 +20,7 @@ def InterperetFormattingLine(Line):
 			if Character == " ":
 				currentState = "InbetweenVarRead"
 			else:
+				if (Character == "."): continue
 				nameBuffer = nameBuffer + Character
 		elif currentState == "InbetweenVarRead":
 			if (Character != " ") and (Character != "="):
@@ -35,7 +36,7 @@ def InterperetFormattingLine(Line):
 	if nameBuffer == "},":
 		nameBuffer = ""
 		varBuffer = "},"
-
+	print(nameBuffer)
 	return nameBuffer, varBuffer, isZon
 
 def readFormatZon(lineList, startingLine, parentZon):
@@ -52,7 +53,7 @@ def readFormatZon(lineList, startingLine, parentZon):
 			newZonObj.name = varName
 			newZonObj.children = [varType]
 			parentZon.children.append(newZonObj)
-		elif (varType == "0") or (varType == '"image.png"'):
+		elif (varType == "0") or (varType == "image.png"):
 			newZonObj = zonValue()
 			newZonObj.name = varName
 			newZonObj.value = varType
@@ -66,7 +67,7 @@ def readFormatZon(lineList, startingLine, parentZon):
 
 		lineNumber += 1
 
-def readFormatFile(baseZonObject):
+def readFormatFile(baseZonObject): # returns the format file in a code readable way
 
 	with open("zonTypes/item.txt", "r") as file:
 		

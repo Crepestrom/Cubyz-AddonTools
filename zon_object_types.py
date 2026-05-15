@@ -1,3 +1,5 @@
+# everything tries to format itself in a similar way to what this creates so they have similar frameworks
+
 class baseZonObject:
 
 	children = []
@@ -13,7 +15,7 @@ class baseZonObject:
 		tempListBuffer.append("}")
 		return tempListBuffer
 	
-class zonObject:
+class zonObject: # .something = {.thing1 = "value1", .thing2 = "value1",}
 
 	name = "ErrorMissingName"
 	children = []
@@ -30,7 +32,7 @@ class zonObject:
 		tempListBuffer.append(tabText + "},")
 		return tempListBuffer
 	
-class zonArray:
+class zonArray: # .something = {"value1", "value2", "value3"},
 
 	name = "ErrorMissingName"
 	children = []
@@ -56,7 +58,7 @@ class zonArray:
 		return tempListBuffer
 
 
-class zonValue:
+class zonValue: # .something = "value",
 
 	name = "ErrorMissingName"
 	value = 0

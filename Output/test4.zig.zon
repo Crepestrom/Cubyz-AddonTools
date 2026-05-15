@@ -1,6 +1,5 @@
 .{
-	.ErrorMissingName = 0,
-	.ErrorMissingName = .{
-	},
-	.ErrorMissingName = {},
+	..tag = {WAD},
+	.texture = sad,
+	.food = d,
 }

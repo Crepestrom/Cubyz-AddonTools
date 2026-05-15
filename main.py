@@ -1,137 +1,32 @@
 from zon_object_types import *
 from formatting import *
+from editor_ui import *
 
 import sys
 
-import sys
-from PyQt6.QtGui import QColor, QPalette
-from PyQt6.QtWidgets import (
-	QApplication,
-	QHBoxLayout,
-	QMainWindow,
-	QPushButton,
-	QStackedLayout,
-	QVBoxLayout,
-	QWidget,
-	QLineEdit,
-	QLabel,
-)
-
-class Color(QWidget):
-	def __init__(self, color):
-		super().__init__()
-		self.setAutoFillBackground(True)
-
-		palette = self.palette()
-		palette.setColor(QPalette.ColorRole.Window, QColor(color))
-		self.setPalette(palette)
 
 
 
-class MainWindow(QMainWindow):
-	def __init__(self, givenFormat):
-		super().__init__()
-		self.setWindowTitle("My App")
-		
-		self.editorVars
-		editorVarsLayout = QVBoxLayout()
-		self.readFormat(givenFormat, editorVarsLayout)
-
-		editorLayout = QVBoxLayout()
-		editorLayout.addLayout(editorVarsLayout)
-		saveZonButton = QPushButton("test")
-		editorLayout.addWidget(saveZonButton)
-		widget = QWidget()
-		widget.setLayout(editorLayout)
-		self.setCentralWidget(widget)
-
-	def readFormat(self, givenFormat, baseParentLayout):
-		for child in givenFormat:
-			if isinstance(child, zonValue):
-				newZonValue = uiZonValue()
-				newZonValue.addZonValueInput(child.name, baseParentLayout, child.value)
-			elif isinstance(child, zonArray):
-				newZonArray = uiZonArray()
-				newZonArray.addZonArrayInput(child.name, baseParentLayout, child.children[0])
+# testing code
+#filename = "test4"
+#filepath = "Output/" + filename + ".zig.zon"
+#textOBJ = baseZonObject()
+#textOBJ.children = [zonValue(), zonObject(), zonArray()]
+#writeGivenZonObjectToFile(filepath, textOBJ)
 
 
-	
-	def checkArrayZonChildren(self, defaultText, parentLayout):
-		
-		widgetsRemovalList = []
-
-		for i in range(parentLayout.count()):
-			childButton = parentLayout.itemAt(i).widget()
-			print(i)
-			if (childButton.text() == "") and (i + 1 != parentLayout.count()):
-				widgetsRemovalList.append(childButton)
-				print("removeOldthings")
-			elif (childButton.text() != "") and (i + 1 == parentLayout.count()):
-				print("attempt to create")
-				self.createSingleArrayInput(defaultText, parentLayout)
-		
-		for widget in widgetsRemovalList:
-			widget.deleteLater()
-	
-	def readEditorOutputZon(self, givenEditorVarUi):
-		print("not made yet")
-		for i in range(givenEditorVarUi.count()):
-			childButton = givenEditorVarUi.itemAt(i).widget()
-
-class uiZonValue:
-	def addZonValueInput(self, name, baseParentLayout, defaultText):
-		txtInputsLayout = QHBoxLayout()
-		
-		self.txtInput = QLineEdit()
-		self.txtInput.setPlaceholderText(defaultText)
-		txtInputsLayout.addWidget(self.txtInput)
-
-		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
-		namelabel = QLabel("." + name + " = ")
-		lineLayout.addWidget(namelabel)
-		lineLayout.addLayout(txtInputsLayout)
-
-		baseParentLayout.addLayout(lineLayout)
-
-class uiZonArray:
-	def addZonArrayInput(self, defaultText, baseParentLayout, name):
-		txtInputsLayout = QHBoxLayout()
-		self.createSingleArrayInput(defaultText, txtInputsLayout)
-		
-		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
-		namelabel = QLabel(name + " = ")
-		lineLayout.addWidget(namelabel)
-		lineLayout.addLayout(txtInputsLayout)
-
-		baseParentLayout.addLayout(lineLayout)
-
-	def createSingleArrayInput(self, defaultText, parentLayout):
-		txtInput = QLineEdit()
-		txtInput.setPlaceholderText(defaultText)
-		txtInput.textChanged.connect(lambda: self.checkArrayZonChildren(defaultText, parentLayout))
-		parentLayout.addWidget(txtInput)
-
-filename = "test4"
-filepath = "Output/" + filename + ".zig.zon"
-
-
-
-textOBJ = baseZonObject()
-textOBJ.children = [zonValue(), zonObject(), zonArray()]
-actualText = textOBJ.writeWithChildren()
-
-with open(filepath, "w") as f:
-	for line in actualText:
-		f.write(line)
-		f.write('\n')
 
 ItemZonFormat = baseZonObject()
 readFormatFile(ItemZonFormat)
 
 print("running app")
 
+#filename = "test4"
+#filepath = "Output/" + filename + ".zig.zon"
+
 app = QApplication(sys.argv)
 window = MainWindow(ItemZonFormat.children)
 window.show()
+print(window.readEditorOutputZon())
 app.exec()
 
