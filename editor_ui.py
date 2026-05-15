@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
 		editorLayout = QVBoxLayout()
 		editorLayout.addLayout(editorVarsLayout)
 		
-		self.filename = "test4"
+		self.filename = "test4" # define this here so it could be changed at another time
 		saveZonButton = QPushButton("test")
 		saveZonButton.pressed.connect(lambda: self.writeZonUiToFile(self.filename, self.readEditorOutputZon()))
 		editorLayout.addWidget(saveZonButton)
