@@ -2,6 +2,9 @@ from zon_object_types import *
 
 def InterperetFormattingLine(Line):
 	
+	# each zonThing is formatted like this
+	# .nameOfThing = typeOfThing,
+
 	currentState = "Tabs"
 	nameBuffer = ""
 	varBuffer = ""
@@ -48,24 +51,55 @@ def readFormatZon(lineList, startingLine, parentZon):
 
 		varName, varType, isZon = InterperetFormattingLine(line)
 
-		if varType == ".tag":
-			newZonObj = zonArray()
-			newZonObj.name = varName
-			newZonObj.children = [varType]
-			parentZon.children.append(newZonObj)
-		elif (varType == "0") or (varType == "image.png"):
-			newZonObj = zonValue()
-			newZonObj.name = varName
-			newZonObj.value = varType
+		if varType == "{":
+			newZonObj = zonObject()
+			lineNumber = readZonObject(lineList, startingLine, newZonObj)
 			parentZon.children.append(newZonObj)
 		else:
-			varType = str(varType)
-			print("Formatter Read Error: could not interperet the varType: {varType}")
+			createChildBasedOnInfo(varName, varType, parentZon)
+			lineNumber += 1
 		
-		if varType == "},":
+
+
+
+def createChildBasedOnInfo(varName, varType, parentZon):
+	if varType == ".tag":
+		newZonObj = zonArray()
+		newZonObj.name = varName
+		newZonObj.children = [varType]
+		parentZon.children.append(newZonObj)
+	elif (varType == "0") or (varType == "image.png") or (varType == "0xffffffff"):
+		newZonObj = zonValue()
+		newZonObj.name = varName
+		newZonObj.value = varType
+		parentZon.children.append(newZonObj)
+	elif varType == "{":
+		print("creating zon")
+	else:
+		varType = str(varType)
+		print("Formatter Read Error: could not interperet the varType: {varType}")
+
+def readZonObject(lineList, startingLine, parentZon):
+	print("reading a zon")
+	lineNumber = startingLine
+
+	while lineNumber < len(lineList):
+		line = lineList[lineNumber]
+
+		varName, varType, isZon = InterperetFormattingLine(line)
+
+		if varType == "{":
+			newZonObj = zonObject()
+			lineNumber = readZonObject(lineList, startingLine, newZonObj)
+			parentZon.children.append(newZonObj)
+		else:
+			createChildBasedOnInfo(varName, varType, parentZon)
+			lineNumber += 1
+		
+		if varName == "},":
 			break
 
-		lineNumber += 1
+	return lineNumber #this is so it continues after its done building a zonoObject
 
 def readFormatFile(baseZonObject): # returns the format file in a code readable way
 
