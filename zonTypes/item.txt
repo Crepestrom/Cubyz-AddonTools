@@ -1,3 +1,4 @@
 .tags = .tag
 .texture = image.png,
 .food = 0,
+.stackSize = 0,
