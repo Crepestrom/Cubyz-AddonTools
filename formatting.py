@@ -39,7 +39,7 @@ def InterperetFormattingLine(Line):
 	if nameBuffer == "},":
 		nameBuffer = ""
 		varBuffer = "},"
-	print(nameBuffer)
+	
 	return nameBuffer, varBuffer, isZon
 
 def readFormatZon(lineList, startingLine, parentZon):
@@ -51,15 +51,14 @@ def readFormatZon(lineList, startingLine, parentZon):
 
 		varName, varType, isZon = InterperetFormattingLine(line)
 
-		if varType == "{":
+		if varType == ".{":
 			newZonObj = zonObject()
-			lineNumber = readZonObject(lineList, startingLine, newZonObj)
+			newZonObj.name = varName
+			lineNumber = readZonObject(lineList, lineNumber + 1, newZonObj)
 			parentZon.children.append(newZonObj)
 		else:
 			createChildBasedOnInfo(varName, varType, parentZon)
 			lineNumber += 1
-		
-
 
 
 def createChildBasedOnInfo(varName, varType, parentZon):
@@ -73,14 +72,12 @@ def createChildBasedOnInfo(varName, varType, parentZon):
 		newZonObj.name = varName
 		newZonObj.value = varType
 		parentZon.children.append(newZonObj)
-	elif varType == "{":
-		print("creating zon")
 	else:
 		varType = str(varType)
 		print("Formatter Read Error: could not interperet the varType: {varType}")
 
 def readZonObject(lineList, startingLine, parentZon):
-	print("reading a zon")
+
 	lineNumber = startingLine
 
 	while lineNumber < len(lineList):
@@ -90,6 +87,7 @@ def readZonObject(lineList, startingLine, parentZon):
 
 		if varType == "{":
 			newZonObj = zonObject()
+			newZonObj.name = varName
 			lineNumber = readZonObject(lineList, startingLine, newZonObj)
 			parentZon.children.append(newZonObj)
 		else:

@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
 		
 		self.editorVarsList = []
 		editorVarsLayout = QVBoxLayout()
-		self.readFormat(givenFormat, editorVarsLayout)
+		self.readFormat(givenFormat, editorVarsLayout, self.editorVarsList)
 
 		editorLayout = QVBoxLayout()
 		editorLayout.addLayout(editorVarsLayout)
@@ -56,16 +56,21 @@ class MainWindow(QMainWindow):
 		filepath = "Output/" + fileName + ".zig.zon"
 		writeGivenZonObjectToFile(filepath, zonObject)
 
-	def readFormat(self, givenFormat, baseParentLayout):
+	def readFormat(self, givenFormat, baseParentLayout, childZonList):
 		for child in givenFormat:
 			if isinstance(child, zonValue):
 				newZonValue = uiZonValue()
 				newZonValue.addZonValueInput(child.name, baseParentLayout, child.value)
-				self.editorVarsList.append(newZonValue)
+				childZonList.append(newZonValue)
 			elif isinstance(child, zonArray):
 				newZonArray = uiZonArray()
 				newZonArray.addZonArrayInput(child.name, baseParentLayout, child.children[0])
-				self.editorVarsList.append(newZonArray)
+				childZonList.append(newZonArray)
+			elif isinstance(child, zonObject):
+				newZonObject = uiZonObject()
+				newZonObject.addZonObjectInput(child.name, baseParentLayout)
+				self.readFormat(child.children, newZonObject.childUiLayout, newZonObject.children)
+				childZonList.append(newZonObject)
 
 	
 	def readEditorOutputZon(self):
@@ -76,24 +81,27 @@ class MainWindow(QMainWindow):
 			childButton = self.editorVarsList[i]
 
 			if isinstance(childButton, uiZonValue):
-				if childButton.txtInput.text() == "": continue
-				newZonObj = zonValue()
-				newZonObj.value = childButton.txtInput.text()
-				newZonObj.name = childButton.name
-				returnZon.children.append(newZonObj)
+				self.addZonValue(childButton, returnZon)
 			if isinstance(childButton, uiZonArray):
-				newZonObj = zonArray()
-				for childTxtInput in childButton.txtInputList:
-					if childTxtInput.text() == "": continue
-					newZonObj.children.append(childTxtInput.text())
-				if newZonObj.children.__len__() == 0: continue
-				newZonObj.name = childButton.name
-				returnZon.children.append(newZonObj)
+				self.addZonArray(childButton, returnZon)
 		return returnZon
 
-				
-
-
+	def addZonValue(self, childButton, returnZon):
+		if childButton.txtInput.text() == "": return
+		newZonObj = zonValue()
+		newZonObj.value = childButton.txtInput.text()
+		newZonObj.name = childButton.name
+		returnZon.children.append(newZonObj)
+	
+	def addZonArray(self, childButton, returnZon):
+		newZonObj = zonArray()
+		for childTxtInput in childButton.txtInputList:
+			if childTxtInput.text() == "": continue
+			newZonObj.children.append(childTxtInput.text())
+		if newZonObj.children.__len__() == 0: return
+		print("LOOOK GERE")
+		newZonObj.name = childButton.name
+		returnZon.children.append(newZonObj)
 # smaller classes for ui
 class uiZonValue:
 
@@ -154,4 +162,22 @@ class uiZonArray:
 		for widget in widgetsRemovalList:
 			self.txtInputList.remove(widget)
 			widget.deleteLater()
+
+class uiZonObject:
+
+	name = "ErrorNotDefined"
+	children = []
+	childUiLayout = None
+
+	def addZonObjectInput(self, name, baseParentLayout):
+		self.childUiLayout = QVBoxLayout()
+		
+		self.name = name
+
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel(name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(self.childUiLayout)
+
+		baseParentLayout.addLayout(lineLayout)
 # end of classes

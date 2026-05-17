@@ -1,3 +1,6 @@
 .{
-	.tags = {gg},
+	.tags = , {wdwd},
+	.texture = d,
+	.food = 2,
+	.stackSize = 2,
 }
