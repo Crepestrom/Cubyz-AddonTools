@@ -77,15 +77,25 @@ class MainWindow(QMainWindow):
 
 		returnZon = baseZonObject()
 		returnZon.children = [] # i dont know why we have to clear it but somehow the format file passes into this
-		for i in range(self.editorVarsList.__len__()):
-			childButton = self.editorVarsList[i]
+
+		self.recurseReadChildren(self.editorVarsList, returnZon)
+
+		return returnZon
+	
+	def recurseReadChildren(self, givenList, returnZon):
+		for i in range(givenList.__len__()):
+			childButton = givenList[i]
 
 			if isinstance(childButton, uiZonValue):
 				self.addZonValue(childButton, returnZon)
 			if isinstance(childButton, uiZonArray):
 				self.addZonArray(childButton, returnZon)
-		return returnZon
-
+			if isinstance(childButton, uiZonObject):
+				newZonObj = zonObject()
+				newZonObj.name = childButton.name
+				self.recurseReadChildren(childButton.children, newZonObj)
+				returnZon.children.append(newZonObj)
+	
 	def addZonValue(self, childButton, returnZon):
 		if childButton.txtInput.text() == "": return
 		newZonObj = zonValue()
@@ -99,9 +109,9 @@ class MainWindow(QMainWindow):
 			if childTxtInput.text() == "": continue
 			newZonObj.children.append(childTxtInput.text())
 		if newZonObj.children.__len__() == 0: return
-		print("LOOOK GERE")
 		newZonObj.name = childButton.name
 		returnZon.children.append(newZonObj)
+	
 # smaller classes for ui
 class uiZonValue:
 

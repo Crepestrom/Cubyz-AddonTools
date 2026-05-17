@@ -1,6 +1,20 @@
 .{
-	.tags = , {wdwd},
+	.tags = {da},
 	.texture = d,
-	.food = 2,
-	.stackSize = 2,
+	.food = a,
+	.stackSize = ad,
+	.ErrorMissingName = .{
+		.durability = 0,
+		.massDamage = 0,
+		.hardnessDamage = 0,
+		.swingSpeed = 0,
+		.textureRoughness = 0,
+		.colors = 0xffffffff,
+		.durability = ad,
+		.massDamage = ad,
+		.hardnessDamage = ad,
+		.swingSpeed = ad,
+		.textureRoughness = ad,
+		.colors = ad,
+	},
 }
