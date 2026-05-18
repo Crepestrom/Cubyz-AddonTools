@@ -1,4 +1,5 @@
 from zon_object_types import *
+from formatting import *
 
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtWidgets import (
@@ -11,6 +12,7 @@ from PyQt6.QtWidgets import (
 	QWidget,
 	QLineEdit,
 	QLabel,
+	QComboBox,
 )
 
 class Color(QWidget):
@@ -71,6 +73,10 @@ class MainWindow(QMainWindow):
 				newZonObject.addZonObjectInput(child.name, baseParentLayout)
 				self.readFormat(child.children, newZonObject.childUiLayout, newZonObject.children)
 				childZonList.append(newZonObject)
+			#if isinstance(child, formatGroupZonMulti):
+				#newZonFormatGroup = uiFormatGroupZonSingle()
+				#newZonFormatGroup.addFormatGroupInput(child.name, baseParentLayout, child.formatGoup)
+				#childZonList.append(newZonFormatGroup)
 
 	
 	def readEditorOutputZon(self):
@@ -190,4 +196,33 @@ class uiZonObject:
 		lineLayout.addLayout(self.childUiLayout)
 
 		baseParentLayout.addLayout(lineLayout)
+
+class uiFormatGroupZonSingle:
+	name = "ErrorNotDefined"
+	givenFormatGroup = []
+	dropdownList = []
+	currentFormat = None
+
+	def addFormatGroupInput(self, name, baseParentLayout, givenFormatGroup):
+		print("added format group input")
+		self.childUiLayout = QVBoxLayout()
+		self.createDropdownInput(givenFormatGroup, self.childUiLayout)
+		self.name = name
+		self.givenFormatGroup = givenFormatGroup
+		
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel(name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(self.childUiLayout)
+
+		#baseParentLayout.addLayout(lineLayout)
+
+	def createDropdownInput(self, givenFormatGroup, parentLayout):
+		dropdownInput = QComboBox()
+		dropdownInput.addItem("")
+		dropdownInput.addItems(["givenFormatGroup", "givenFormatGroup2", "givenFormatGroup3"])
+		#dropdownInput.textChanged.connect(lambda: self.checkDropdownChildren(givenFormatGroup, parentLayout))
+		self.dropdownList.append(dropdownInput)
+		#parentLayout.addWidget(dropdownInput)
+
 # end of classes

@@ -9,4 +9,5 @@
 	.swingSpeed = 0,
 	.textureRoughness = 0,
 	.colors = 0xffffffff,
+	.modifiers = modifiers
 },

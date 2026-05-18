@@ -1,20 +1,19 @@
 from zon_object_types import *
+import os
+
 
 def InterperetFormattingLine(Line):
 	
 	# each zonThing is formatted like this
 	# .nameOfThing = typeOfThing,
-
 	currentState = "Tabs"
 	nameBuffer = ""
 	varBuffer = ""
 	isZon = False
 
 	for Character in Line:
-
 		if (Character != "}") or (Character != "{"): # zon detector
 			isZon = True
-
 		if currentState == "Tabs":
 			if Character != "	":
 				currentState = "ReadName"
@@ -28,7 +27,6 @@ def InterperetFormattingLine(Line):
 		elif currentState == "InbetweenVarRead":
 			if (Character != " ") and (Character != "="):
 				currentState = "ReadVar"
-
 		if currentState == "ReadVar":
 			if Character == ",":
 				currentState = "EndValue"
@@ -43,14 +41,10 @@ def InterperetFormattingLine(Line):
 	return nameBuffer, varBuffer, isZon
 
 def readFormatZon(lineList, startingLine, parentZon):
-
 	lineNumber = startingLine
-
 	while lineNumber < len(lineList):
 		line = lineList[lineNumber]
-
 		varName, varType, isZon = InterperetFormattingLine(line)
-
 		if varType == ".{":
 			newZonObj = zonObject()
 			newZonObj.name = varName
@@ -61,7 +55,7 @@ def readFormatZon(lineList, startingLine, parentZon):
 			lineNumber += 1
 
 
-def createChildBasedOnInfo(varName, varType, parentZon):
+def createChildBasedOnInfo(varName, varType, parentZon): # determines how to interperet the given format text
 	if (varType == ".tag") or (varType == "0xffffffff"):
 		newZonObj = zonArray()
 		newZonObj.name = varName
@@ -72,19 +66,20 @@ def createChildBasedOnInfo(varName, varType, parentZon):
 		newZonObj.name = varName
 		newZonObj.value = varType
 		parentZon.children.append(newZonObj)
+	elif (varType == "modifiers"):
+		newZonObj = formatGroupZonMulti()
+		newZonObj.name = varName
+		newZonObj.formatGoup = createFormatGroup("formatting/modifier")
+		parentZon.children.append(newZonObj)
 	else:
 		varType = str(varType)
 		print("Formatter Read Error: could not interperet the varType: {varType}")
 
 def readZonObject(lineList, startingLine, parentZon):
-
 	lineNumber = startingLine
-
 	while lineNumber < len(lineList):
 		line = lineList[lineNumber]
-
 		varName, varType, isZon = InterperetFormattingLine(line)
-
 		if varType == "{":
 			newZonObj = zonObject()
 			newZonObj.name = varName
@@ -99,12 +94,12 @@ def readZonObject(lineList, startingLine, parentZon):
 
 	return lineNumber #this is so it continues after its done building a zonoObject
 
-def readFormatFile(baseZonObject): # returns the format file in a code readable way
+def readFormatFile(filePath): # returns the format file in a code readable way
 
-	with open("zonTypes/item.txt", "r") as file:
+	with open(filePath, "r") as file:
 		
 		documentLines = []
-		CurrentZonObject = baseZonObject
+		CurrentZonObject = baseZonObject()
 		
 		while True:
 
@@ -113,7 +108,23 @@ def readFormatFile(baseZonObject): # returns the format file in a code readable 
 				break
 			
 			documentLines.append(line.strip())
+		readFormatZon(documentLines, 0, CurrentZonObject)
+	return CurrentZonObject
 
-		return readFormatZon(documentLines, 0, CurrentZonObject)
+def createFormatGroup(filePath):
+		specificFormatList = []
+		for name in os.listdir(filePath):
+			formatZon = readFormatFile(filePath + "/"  + name)
+			specificFormatList.append(formatZon)
+		return specificFormatList
+
+class formatGroupZonMulti:
+
+	name = "ErrorMissingName"
+	formatGoup = []
+
+
+
+
 
 print("imported formatting.py")
