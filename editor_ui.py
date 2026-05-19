@@ -44,13 +44,21 @@ class MainWindow(QMainWindow):
 		editorLayout = QVBoxLayout()
 		editorLayout.addLayout(editorVarsLayout)
 		
-		self.filename = "test4" # define this here so it could be changed at another time
-		saveZonButton = QPushButton("test")
+		self.filename = "test" # define this here so it could be changed at another time
+		saveZonButton = QPushButton("Save")
 		saveZonButton.pressed.connect(lambda: self.writeZonUiToFile(self.filename, self.readEditorOutputZon()))
 		editorLayout.addWidget(saveZonButton)
+		saveZonButton = QLineEdit("filename")
+		saveZonButton.setPlaceholderText("put filename here")
+		saveZonButton.textChanged.connect(self.changeSaveText)
+		editorLayout.addWidget(saveZonButton)
+
 		widget = QWidget()
 		widget.setLayout(editorLayout)
 		self.setCentralWidget(widget)
+
+	def changeSaveText(self, text):
+		self.filename = text
 
 	def writeZonUiToFile(self, fileName, zonObject):
 		filepath = "Output/" + fileName + ".zig.zon"

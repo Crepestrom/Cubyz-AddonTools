@@ -1,0 +1,10 @@
+.{
+	.material = .{
+		.durability = 0,
+		.massDamage = 0,
+		.hardnessDamage = 0,
+		.swingSpeed = 0,
+		.textureRoughness = 0,
+		.colors = {0xffffffff},
+	},
+}
