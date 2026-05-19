@@ -3,7 +3,7 @@ from formatting import *
 from editor_ui import *
 
 import sys
-
+import os
 
 
 
@@ -16,8 +16,7 @@ import sys
 
 
 
-ItemZonFormat = baseZonObject()
-readFormatFile(ItemZonFormat)
+ItemZonFormat = readFormatFile("formatting/base_types/item.txt")
 
 print("running app")
 
@@ -29,4 +28,3 @@ window = MainWindow(ItemZonFormat.children)
 window.show()
 print(window.readEditorOutputZon())
 app.exec()
-

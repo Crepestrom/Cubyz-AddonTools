@@ -1,21 +1,23 @@
 # everything tries to format itself in a similar way to what this creates so they have similar frameworks
 
-class baseZonObject:
+class baseZonObject():
 
 	children = []
 
-	def writeWithChildren(self):
-		tempListBuffer = []
+	def writeWithChildren(self, givenChildren, tabText):
+		tempListBuffer = givenChildren
 
-		tempListBuffer.append(".{")
+		tempListBuffer.append(tabText + ".{")
 
 		for child in self.children:
-			tempListBuffer = child.writeWithChildren(tempListBuffer, "	")
+			tempListBuffer = child.writeWithChildren(tempListBuffer, tabText + "	")
 
-		tempListBuffer.append("}")
+		if tabText == "": tempListBuffer.append(tabText + "}") 
+		else: tempListBuffer.append(tabText + "},")
+
 		return tempListBuffer
 	
-class zonObject: # .something = {.thing1 = "value1", .thing2 = "value1",}
+class zonObject(): # .something = {.thing1 = "value1", .thing2 = "value1",}
 
 	name = "ErrorMissingName"
 	children = []
@@ -32,7 +34,7 @@ class zonObject: # .something = {.thing1 = "value1", .thing2 = "value1",}
 		tempListBuffer.append(tabText + "},")
 		return tempListBuffer
 	
-class zonArray: # .something = {"value1", "value2", "value3"},
+class zonArray(): # .something = {"value1", "value2", "value3"},
 
 	name = "ErrorMissingName"
 	children = []
@@ -41,24 +43,23 @@ class zonArray: # .something = {"value1", "value2", "value3"},
 		
 		tempListBuffer = givenChildren
 		tempTextBuffer = ""
-		tempTextBuffer = "{" + tempTextBuffer
 
 		childCounter = 0
 
 		for child in self.children:
-			if childCounter == 0:
+			if childCounter == self.children.__len__()-1:
 				tempTextBuffer = tempTextBuffer + child
 			else:
-				tempTextBuffer = ", " + tempTextBuffer + child
+				tempTextBuffer = tempTextBuffer + child + ", "
 			childCounter += 1
 
-		tempTextBuffer = tempTextBuffer + "}"
+		tempTextBuffer = ".{" + tempTextBuffer + "}"
 
 		tempListBuffer.append(tabText + "." + self.name + " = " + tempTextBuffer + ",")
 		return tempListBuffer
 
 
-class zonValue: # .something = "value",
+class zonValue(): # .something = "value",
 
 	name = "ErrorMissingName"
 	value = 0
@@ -70,5 +71,11 @@ class zonValue: # .something = "value",
 		tempListBuffer.append(tabText + "." + self.name + " = " + str(self.value) + ",")
 
 		return tempListBuffer
-	
+
+class formatGroupZonMulti():
+
+	name = "ErrorMissingName"
+	formatGroup = []
+	children = []
+
 print("imported zon_object_types.py")
