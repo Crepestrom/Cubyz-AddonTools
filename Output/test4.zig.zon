@@ -1,0 +1,10 @@
+.{
+	.material = .{
+		.modifiers = .{
+			.{
+				.strength = wad,
+				.tag = wad,
+			},
+		},
+	},
+}

@@ -1,4 +1,4 @@
-.tags = .tag
+.tags = .tags
 .texture = image.png,
 .food = 0,
 .stackSize = 0,
@@ -9,4 +9,5 @@
 	.swingSpeed = 0,
 	.textureRoughness = 0,
 	.colors = 0xffffffff,
+	.modifiers = modifiers
 },
