@@ -36,7 +36,7 @@ def deleteWithChildren(object):
 			elif (object.itemAt(i).layout()):
 				if object.itemAt(i).layout().count() != 0:
 					deleteWithChildren(object.itemAt(i))
-				#object.itemAt(i).layout().deleteLater()
+				object.itemAt(i).layout().deleteLater()
 			else:
 				print("deleteWithChildren found a child it could not delete")
 				print(object)
