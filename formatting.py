@@ -69,11 +69,12 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 	elif (varType == "modifiers"):
 		newZonObj = formatGroupZonMulti()
 		newZonObj.name = varName
-		newZonObj.formatGoup = createFormatGroup("formatting/modifier")
+		newZonObj.formatGroup = createFormatGroup("formatting/modifier")
 		parentZon.children.append(newZonObj)
+	elif (varType == "},"):
+		print("end of zon")
 	else:
-		varType = str(varType)
-		print("Formatter Read Error: could not interperet the varType: {varType}")
+		print("Formatter Read Error: could not interperet the varType:" + str(varType))
 
 def readZonObject(lineList, startingLine, parentZon):
 	lineNumber = startingLine
@@ -96,11 +97,11 @@ def readZonObject(lineList, startingLine, parentZon):
 
 def readFormatFile(filePath): # returns the format file in a code readable way
 
+	documentLines = []
+	CurrentZonObject = baseZonObject()
+	CurrentZonObject.children = [] # i really dont understand why we have to clear this
 	with open(filePath, "r") as file:
-		
-		documentLines = []
-		CurrentZonObject = baseZonObject()
-		
+				
 		while True:
 
 			line = file.readline()
@@ -112,16 +113,10 @@ def readFormatFile(filePath): # returns the format file in a code readable way
 	return CurrentZonObject
 
 def createFormatGroup(filePath):
-		specificFormatList = []
-		for name in os.listdir(filePath):
-			formatZon = readFormatFile(filePath + "/"  + name)
-			specificFormatList.append(formatZon)
-		return specificFormatList
-
-class formatGroupZonMulti:
-
-	name = "ErrorMissingName"
-	formatGoup = []
+	specificFormatList = []
+	for name in os.listdir(filePath):
+		specificFormatList.append(filePath + "/"  + name)
+	return specificFormatList
 
 
 

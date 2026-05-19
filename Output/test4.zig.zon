@@ -1,11 +1,9 @@
 .{
+	.tags = , , , , , , , , , , , , , , , , , , , , , , , , , , , , , {awdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawd},
 	.material = .{
-		.durability = 0,
-		.massDamage = 0,
-		.hardnessDamage = 0,
-		.swingSpeed = 0,
-		.textureRoughness = 0,
-		.colors = 0xffffffff,
-		.colors = asdadasd,
+		.colors = , , , , , , , , , , , , , , , , , , , , , , , , , , , , , {awdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawd},
+		.modifiers = .{
+			.tag = , , , , , , , , , , , , , , , , , , , , , , , , , , , , , {awdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawd},
+		},
 	},
 }

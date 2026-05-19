@@ -70,5 +70,11 @@ class zonValue: # .something = "value",
 		tempListBuffer.append(tabText + "." + self.name + " = " + str(self.value) + ",")
 
 		return tempListBuffer
-	
+
+class formatGroupZonMulti:
+
+	name = "ErrorMissingName"
+	formatGroup = []
+	children = []
+
 print("imported zon_object_types.py")

@@ -25,14 +25,55 @@ class Color(QWidget):
 		self.setPalette(palette)
 
 
+def deleteWithChildren(object):
+	if (object == None):
+		return
+
+	if (object.layout()):
+		for i in range(object.layout().count()):
+			if (object.itemAt(i).widget()):
+				object.itemAt(i).widget().deleteLater()
+			elif (object.itemAt(i).layout()):
+				if object.itemAt(i).layout().count() != 0:
+					deleteWithChildren(object.itemAt(i))
+				#object.itemAt(i).layout().deleteLater()
+			else:
+				print("deleteWithChildren found a child it could not delete")
+				print(object)
+	elif (object.widget()):
+		object.widget().deleteLater()
+	else:
+		print("deleteWithChildren found a child it could not delete")
+		print(object)
+			
 def writeGivenZonObjectToFile(filepath, zonObject):
-	
+	print("Writing to " + filepath)
 	actualText = zonObject.writeWithChildren()
-	print(actualText)
 	with open(filepath, "w") as f:
 		for line in actualText:
 			f.write(line)
 			f.write('\n')
+
+def readFormat(givenFormat, baseParentLayout, childZonList):
+	for child in givenFormat:
+		if isinstance(child, zonValue):
+			newZonValue = uiZonValue()
+			newZonValue.addZonValueInput(child.name, baseParentLayout, child.value)
+			childZonList.append(newZonValue)
+		elif isinstance(child, zonArray):
+			newZonArray = uiZonArray()
+			newZonArray.addZonArrayInput(child.name, baseParentLayout, child.children[0])
+			childZonList.append(newZonArray)
+		elif isinstance(child, zonObject):
+			newZonObject = uiZonObject()
+			uiZonObject.children
+			newZonObject.addZonObjectInput(child.name, baseParentLayout)
+			readFormat(child.children, newZonObject.childUiLayout, newZonObject.children)
+			childZonList.append(newZonObject)
+		if isinstance(child, formatGroupZonMulti):
+			newZonFormatGroup = uiFormatGroupZonMulti()
+			newZonFormatGroup.addFormatGroupInput(child.name, baseParentLayout, child.formatGroup)
+			childZonList.append(newZonFormatGroup)
 
 class MainWindow(QMainWindow):
 	def __init__(self, givenFormat):
@@ -41,7 +82,7 @@ class MainWindow(QMainWindow):
 		
 		self.editorVarsList = []
 		editorVarsLayout = QVBoxLayout()
-		self.readFormat(givenFormat, editorVarsLayout, self.editorVarsList)
+		readFormat(givenFormat, editorVarsLayout, self.editorVarsList)
 
 		editorLayout = QVBoxLayout()
 		editorLayout.addLayout(editorVarsLayout)
@@ -57,26 +98,6 @@ class MainWindow(QMainWindow):
 	def writeZonUiToFile(self, fileName, zonObject):
 		filepath = "Output/" + fileName + ".zig.zon"
 		writeGivenZonObjectToFile(filepath, zonObject)
-
-	def readFormat(self, givenFormat, baseParentLayout, childZonList):
-		for child in givenFormat:
-			if isinstance(child, zonValue):
-				newZonValue = uiZonValue()
-				newZonValue.addZonValueInput(child.name, baseParentLayout, child.value)
-				childZonList.append(newZonValue)
-			elif isinstance(child, zonArray):
-				newZonArray = uiZonArray()
-				newZonArray.addZonArrayInput(child.name, baseParentLayout, child.children[0])
-				childZonList.append(newZonArray)
-			elif isinstance(child, zonObject):
-				newZonObject = uiZonObject()
-				newZonObject.addZonObjectInput(child.name, baseParentLayout)
-				self.readFormat(child.children, newZonObject.childUiLayout, newZonObject.children)
-				childZonList.append(newZonObject)
-			#if isinstance(child, formatGroupZonMulti):
-				#newZonFormatGroup = uiFormatGroupZonSingle()
-				#newZonFormatGroup.addFormatGroupInput(child.name, baseParentLayout, child.formatGoup)
-				#childZonList.append(newZonFormatGroup)
 
 	
 	def readEditorOutputZon(self):
@@ -98,6 +119,13 @@ class MainWindow(QMainWindow):
 				self.addZonArray(childButton, returnZon)
 			if isinstance(childButton, uiZonObject):
 				newZonObj = zonObject()
+				newZonObj.children = [] # i suppose it just constantly flows over
+				newZonObj.name = childButton.name
+				self.recurseReadChildren(childButton.children, newZonObj)
+				returnZon.children.append(newZonObj)
+			if isinstance(childButton, uiFormatGroupZonMulti):
+				newZonObj = zonObject()
+				newZonObj.children = [] # i suppose it just constantly flows over
 				newZonObj.name = childButton.name
 				self.recurseReadChildren(childButton.children, newZonObj)
 				returnZon.children.append(newZonObj)
@@ -197,11 +225,11 @@ class uiZonObject:
 
 		baseParentLayout.addLayout(lineLayout)
 
-class uiFormatGroupZonSingle:
+class uiFormatGroupZonMulti:
 	name = "ErrorNotDefined"
 	givenFormatGroup = []
-	dropdownList = []
-	currentFormat = None
+	dropdownBox = None
+	children = []
 
 	def addFormatGroupInput(self, name, baseParentLayout, givenFormatGroup):
 		print("added format group input")
@@ -215,14 +243,39 @@ class uiFormatGroupZonSingle:
 		lineLayout.addWidget(namelabel)
 		lineLayout.addLayout(self.childUiLayout)
 
-		#baseParentLayout.addLayout(lineLayout)
+		baseParentLayout.addLayout(lineLayout)
 
 	def createDropdownInput(self, givenFormatGroup, parentLayout):
 		dropdownInput = QComboBox()
+		
 		dropdownInput.addItem("")
-		dropdownInput.addItems(["givenFormatGroup", "givenFormatGroup2", "givenFormatGroup3"])
-		#dropdownInput.textChanged.connect(lambda: self.checkDropdownChildren(givenFormatGroup, parentLayout))
-		self.dropdownList.append(dropdownInput)
-		#parentLayout.addWidget(dropdownInput)
+		dropdownInput.addItems(givenFormatGroup)
+		dropdownInput.currentTextChanged.connect(lambda: self.checkDropdownChildren(parentLayout))
+		self.dropdownBox = (dropdownInput)
+
+		parentLayout.addWidget(dropdownInput)
+	
+	def checkDropdownChildren(self, parentLayout):
+		removalList = []
+		for i in range(parentLayout.count()):
+			removalList.append(parentLayout.itemAt(i).layout())
+
+		self.children = []
+		for thing in removalList:
+			deleteWithChildren(thing)
+		
+		childUiZonLayout = QVBoxLayout()# we seperate it like this so that the children can be deleted without the dropdown deleting itself
+		parentLayout.addLayout(childUiZonLayout)
+
+		text = self.dropdownBox.currentText()
+		print("changing dropdown")
+		if text != "":
+			readFormat(readFormatFile(text).children, parentLayout, self.children)
+			print(self.children)
+			
+
+
+
+
 
 # end of classes

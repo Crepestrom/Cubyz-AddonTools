@@ -1,2 +1,2 @@
 .strength = 0
-.strength = .tag
+.tag = .tag

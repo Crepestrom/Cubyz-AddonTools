@@ -28,4 +28,3 @@ window = MainWindow(ItemZonFormat.children)
 window.show()
 print(window.readEditorOutputZon())
 app.exec()
-
