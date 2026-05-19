@@ -48,7 +48,7 @@ def deleteWithChildren(object):
 			
 def writeGivenZonObjectToFile(filepath, zonObject):
 	print("Writing to " + filepath)
-	actualText = zonObject.writeWithChildren()
+	actualText = zonObject.writeWithChildren([], "")
 	with open(filepath, "w") as f:
 		for line in actualText:
 			f.write(line)
@@ -118,16 +118,16 @@ class MainWindow(QMainWindow):
 			if isinstance(childButton, uiZonArray):
 				self.addZonArray(childButton, returnZon)
 			if isinstance(childButton, uiZonObject):
-				newZonObj = zonObject()
-				newZonObj.children = [] # i suppose it just constantly flows over
-				newZonObj.name = childButton.name
-				self.recurseReadChildren(childButton.children, newZonObj)
-				returnZon.children.append(newZonObj)
+				self.addZonObj(childButton, returnZon)
 			if isinstance(childButton, uiFormatGroupZonMulti):
 				newZonObj = zonObject()
 				newZonObj.children = [] # i suppose it just constantly flows over
 				newZonObj.name = childButton.name
-				self.recurseReadChildren(childButton.children, newZonObj)
+				newBaseZonObj = baseZonObject()
+				newBaseZonObj.children = []
+				self.recurseReadChildren(childButton.children, newBaseZonObj)
+				if newBaseZonObj.children.__len__() == 0: return
+				newZonObj.children = [newBaseZonObj]
 				returnZon.children.append(newZonObj)
 	
 	def addZonValue(self, childButton, returnZon):
@@ -139,6 +139,7 @@ class MainWindow(QMainWindow):
 	
 	def addZonArray(self, childButton, returnZon):
 		newZonObj = zonArray()
+		newZonObj.children = []
 		for childTxtInput in childButton.txtInputList:
 			if childTxtInput.text() == "": continue
 			newZonObj.children.append(childTxtInput.text())
@@ -146,8 +147,16 @@ class MainWindow(QMainWindow):
 		newZonObj.name = childButton.name
 		returnZon.children.append(newZonObj)
 	
+	def addZonObj(self, childButton, returnZon):
+		newZonObj = zonObject()
+		newZonObj.children = [] # i suppose it just constantly flows over
+		newZonObj.name = childButton.name
+		self.recurseReadChildren(childButton.children, newZonObj)
+		if newZonObj.children.__len__() == 0: return
+		returnZon.children.append(newZonObj)
+	
 # smaller classes for ui
-class uiZonValue:
+class uiZonValue():
 
 	name = "ErrorNotDefined"
 	txtInput = None
@@ -167,13 +176,13 @@ class uiZonValue:
 
 		baseParentLayout.addLayout(lineLayout)
 
-class uiZonArray:
+class uiZonArray():
 
 	name = "ErrorNotDefined"
-	txtInputList = []
 
 	def addZonArrayInput(self, name, baseParentLayout, defaultText):
 		txtInputsLayout = QHBoxLayout()
+		self.txtInputList = []
 		self.createSingleArrayInput(defaultText, txtInputsLayout)
         
 		self.name = name
@@ -207,7 +216,7 @@ class uiZonArray:
 			self.txtInputList.remove(widget)
 			widget.deleteLater()
 
-class uiZonObject:
+class uiZonObject():
 
 	name = "ErrorNotDefined"
 	children = []
@@ -225,7 +234,7 @@ class uiZonObject:
 
 		baseParentLayout.addLayout(lineLayout)
 
-class uiFormatGroupZonMulti:
+class uiFormatGroupZonMulti():
 	name = "ErrorNotDefined"
 	givenFormatGroup = []
 	dropdownBox = None
@@ -273,9 +282,6 @@ class uiFormatGroupZonMulti:
 			readFormat(readFormatFile(text).children, parentLayout, self.children)
 			print(self.children)
 			
-
-
-
 
 
 # end of classes

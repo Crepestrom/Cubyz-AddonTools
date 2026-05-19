@@ -56,12 +56,12 @@ def readFormatZon(lineList, startingLine, parentZon):
 
 
 def createChildBasedOnInfo(varName, varType, parentZon): # determines how to interperet the given format text
-	if (varType == ".tag") or (varType == "0xffffffff"):
+	if (varType == ".tags") or (varType == "0xffffffff"):
 		newZonObj = zonArray()
 		newZonObj.name = varName
 		newZonObj.children = [varType]
 		parentZon.children.append(newZonObj)
-	elif (varType == "0") or (varType == "image.png"):
+	elif (varType == "0") or (varType == "image.png") or (varType == ".tag"):
 		newZonObj = zonValue()
 		newZonObj.name = varName
 		newZonObj.value = varType

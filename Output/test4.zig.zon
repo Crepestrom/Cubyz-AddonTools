@@ -1,9 +1,10 @@
 .{
-	.tags = , , , , , , , , , , , , , , , , , , , , , , , , , , , , , {awdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawd},
 	.material = .{
-		.colors = , , , , , , , , , , , , , , , , , , , , , , , , , , , , , {awdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawd},
 		.modifiers = .{
-			.tag = , , , , , , , , , , , , , , , , , , , , , , , , , , , , , {awdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawdawd},
+			.{
+				.strength = 123,
+				.tag = 123,
+			},
 		},
 	},
 }
