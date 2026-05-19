@@ -72,7 +72,7 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 		newZonObj.formatGroup = createFormatGroup("formatting/modifier")
 		parentZon.children.append(newZonObj)
 	elif (varType == "},"):
-		print("end of zon")
+		return
 	else:
 		print("Formatter Read Error: could not interperet the varType:" + str(varType))
 

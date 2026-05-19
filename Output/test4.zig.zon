@@ -2,8 +2,8 @@
 	.material = .{
 		.modifiers = .{
 			.{
-				.strength = 123,
-				.tag = 123,
+				.strength = wad,
+				.tag = wad,
 			},
 		},
 	},

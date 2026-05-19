@@ -277,10 +277,8 @@ class uiFormatGroupZonMulti():
 		parentLayout.addLayout(childUiZonLayout)
 
 		text = self.dropdownBox.currentText()
-		print("changing dropdown")
 		if text != "":
 			readFormat(readFormatFile(text).children, parentLayout, self.children)
-			print(self.children)
 			
 
 
