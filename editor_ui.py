@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
 		saveZonButton = QPushButton("Save")
 		saveZonButton.pressed.connect(lambda: self.writeZonUiToFile(self.filename, self.readEditorOutputZon()))
 		editorLayout.addWidget(saveZonButton)
-		saveZonButton = QLineEdit("filename")
+		saveZonButton = QLineEdit()
 		saveZonButton.setPlaceholderText("put filename here")
 		saveZonButton.textChanged.connect(self.changeSaveText)
 		editorLayout.addWidget(saveZonButton)
