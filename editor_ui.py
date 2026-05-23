@@ -1,6 +1,7 @@
 from zon_object_types import *
 from formatting import *
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtWidgets import (
 	QApplication,
@@ -13,6 +14,7 @@ from PyQt6.QtWidgets import (
 	QLineEdit,
 	QLabel,
 	QComboBox,
+	QScrollArea
 )
 
 class Color(QWidget):
@@ -66,7 +68,7 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			childZonList.append(newZonArray)
 		elif isinstance(child, zonObject):
 			newZonObject = uiZonObject()
-			uiZonObject.children
+			uiZonObject.children = []
 			newZonObject.addZonObjectInput(child.name, baseParentLayout)
 			readFormat(child.children, newZonObject.childUiLayout, newZonObject.children)
 			childZonList.append(newZonObject)
@@ -82,15 +84,20 @@ class MainWindow(QMainWindow):
 		
 		self.editorVarsList = []
 		editorVarsLayout = QVBoxLayout()
+
 		readFormat(givenFormat, editorVarsLayout, self.editorVarsList)
 
+		scrollBar = QScrollArea()
+		scrollBar.setLayout(editorVarsLayout)
+		scrollBar.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
 		editorLayout = QVBoxLayout()
-		editorLayout.addLayout(editorVarsLayout)
+		editorLayout.addWidget(scrollBar)
 		
 		self.filename = "test" # define this here so it could be changed at another time
 		saveZonButton = QPushButton("Save")
 		saveZonButton.pressed.connect(lambda: self.writeZonUiToFile(self.filename, self.readEditorOutputZon()))
 		editorLayout.addWidget(saveZonButton)
+
 		saveZonButton = QLineEdit()
 		saveZonButton.setPlaceholderText("put filename here")
 		saveZonButton.textChanged.connect(self.changeSaveText)
@@ -131,6 +138,7 @@ class MainWindow(QMainWindow):
 				newZonObj = zonObject()
 				newZonObj.children = [] # i suppose it just constantly flows over
 				newZonObj.name = childButton.name
+
 				newBaseZonObj = baseZonObject()
 				newBaseZonObj.children = []
 				self.recurseReadChildren(childButton.children, newBaseZonObj)

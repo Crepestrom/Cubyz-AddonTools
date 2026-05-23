@@ -14,9 +14,7 @@ import os
 #textOBJ.children = [zonValue(), zonObject(), zonArray()]
 #writeGivenZonObjectToFile(filepath, textOBJ)
 
-
-
-ItemZonFormat = readFormatFile("formatting/base_types/item.txt")
+ItemZonFormat = readFormatFile("formatting/base_types/block.txt")
 
 print("running app")
 
