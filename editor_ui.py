@@ -85,15 +85,22 @@ class MainWindow(QMainWindow):
 		self.editorVarsList = []
 		editorVarsLayout = QVBoxLayout()
 
-		readFormat(givenFormat, editorVarsLayout, self.editorVarsList)
+		
 
 		scrollBar = QScrollArea()
-		scrollBar.setLayout(editorVarsLayout)
+		tempWidget = QWidget()
+		tempWidget.setLayout(editorVarsLayout)
+
 		scrollBar.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+		scrollBar.setWidget(tempWidget)
 		editorLayout = QVBoxLayout()
 		editorLayout.addWidget(scrollBar)
 		
 		self.filename = "test" # define this here so it could be changed at another time
+		dropdownFormatInput = QComboBox()
+		dropdownFormatInput.addItem("")
+		dropdownFormatInput.addItems(["formatting/base_types/item.txt", "formatting/base_types/block.txt"])
+		#dropdownFormatInput.currentTextChanged.connect(lambda: )
 		saveZonButton = QPushButton("Save")
 		saveZonButton.pressed.connect(lambda: self.writeZonUiToFile(self.filename, self.readEditorOutputZon()))
 		editorLayout.addWidget(saveZonButton)
@@ -106,6 +113,8 @@ class MainWindow(QMainWindow):
 		widget = QWidget()
 		widget.setLayout(editorLayout)
 		self.setCentralWidget(widget)
+
+		readFormat(givenFormat, editorVarsLayout, self.editorVarsList)
 
 	def changeSaveText(self, text):
 		self.filename = text

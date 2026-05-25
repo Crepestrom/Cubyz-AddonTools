@@ -1,9 +1,2 @@
 .{
-	.item = .{
-		.modifiers = .{
-			.{
-				.strength = 123,
-			},
-		},
-	},
 }
