@@ -1,6 +1,7 @@
 from zon_object_types import *
 from formatting import *
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtWidgets import (
 	QApplication,
@@ -13,6 +14,7 @@ from PyQt6.QtWidgets import (
 	QLineEdit,
 	QLabel,
 	QComboBox,
+	QScrollArea
 )
 
 class Color(QWidget):
@@ -66,7 +68,7 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			childZonList.append(newZonArray)
 		elif isinstance(child, zonObject):
 			newZonObject = uiZonObject()
-			uiZonObject.children
+			uiZonObject.children = []
 			newZonObject.addZonObjectInput(child.name, baseParentLayout)
 			readFormat(child.children, newZonObject.childUiLayout, newZonObject.children)
 			childZonList.append(newZonObject)
@@ -74,23 +76,32 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			newZonFormatGroup = uiFormatGroupZonMulti()
 			newZonFormatGroup.addFormatGroupInput(child.name, baseParentLayout, child.formatGroup)
 			childZonList.append(newZonFormatGroup)
-
+#MARK: MainWindow
 class MainWindow(QMainWindow):
 	def __init__(self, givenFormat):
 		super().__init__()
 		self.setWindowTitle("My App")
 		
 		self.editorVarsList = []
-		editorVarsLayout = QVBoxLayout()
-		readFormat(givenFormat, editorVarsLayout, self.editorVarsList)
+		scrollBar = QScrollArea()
+		scrollBar.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+
 
 		editorLayout = QVBoxLayout()
-		editorLayout.addLayout(editorVarsLayout)
 		
 		self.filename = "test" # define this here so it could be changed at another time
+		self.zonTypeDropdown = QComboBox()
+		self.zonTypeDropdown.addItem("")
+		self.zonTypeDropdown.addItems(["formatting/base_types/item.txt", "formatting/base_types/block.txt"])
+		self.zonTypeDropdown.currentTextChanged.connect(lambda: self.setScrollAreaLayout(scrollBar))
+		editorLayout.addWidget(self.zonTypeDropdown)
+
+		editorLayout.addWidget(scrollBar)
+
 		saveZonButton = QPushButton("Save")
 		saveZonButton.pressed.connect(lambda: self.writeZonUiToFile(self.filename, self.readEditorOutputZon()))
 		editorLayout.addWidget(saveZonButton)
+
 		saveZonButton = QLineEdit()
 		saveZonButton.setPlaceholderText("put filename here")
 		saveZonButton.textChanged.connect(self.changeSaveText)
@@ -99,6 +110,23 @@ class MainWindow(QMainWindow):
 		widget = QWidget()
 		widget.setLayout(editorLayout)
 		self.setCentralWidget(widget)
+
+	def setScrollAreaLayout(self, ScrollObj):
+
+		givenFormatName = self.zonTypeDropdown.currentText()
+		givenFormat = readFormatFile(givenFormatName).children
+
+		self.editorVarsList = []
+		editorVarsLayout = QVBoxLayout()
+
+		tempWidget = QWidget()
+		tempWidget.setLayout(editorVarsLayout)
+
+		readFormat(givenFormat , editorVarsLayout, self.editorVarsList)
+
+		ScrollObj.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+		ScrollObj.setWidget(tempWidget)
+
 
 	def changeSaveText(self, text):
 		self.filename = text
@@ -131,6 +159,7 @@ class MainWindow(QMainWindow):
 				newZonObj = zonObject()
 				newZonObj.children = [] # i suppose it just constantly flows over
 				newZonObj.name = childButton.name
+
 				newBaseZonObj = baseZonObject()
 				newBaseZonObj.children = []
 				self.recurseReadChildren(childButton.children, newBaseZonObj)
@@ -162,7 +191,8 @@ class MainWindow(QMainWindow):
 		self.recurseReadChildren(childButton.children, newZonObj)
 		if newZonObj.children.__len__() == 0: return
 		returnZon.children.append(newZonObj)
-	
+
+#MARK: UiClasses
 # smaller classes for ui
 class uiZonValue():
 

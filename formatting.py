@@ -1,6 +1,13 @@
 from zon_object_types import *
 import os
 
+def is_float(value):
+	try:
+		float(value)
+		return True
+	except ValueError:
+		return False
+
 
 def InterperetFormattingLine(Line):
 	
@@ -61,7 +68,7 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 		newZonObj.name = varName
 		newZonObj.children = [varType]
 		parentZon.children.append(newZonObj)
-	elif (varType == "0") or (varType == "image.png") or (varType == ".tag"):
+	elif (varType.isdecimal()) or (is_float(varType)) or (varType == "image.png") or (varType == ".tag") or (varType == "true") or (varType == "false") or (varType == "0x000000") or (varType == "cubyz:no_rotation"):
 		newZonObj = zonValue()
 		newZonObj.name = varName
 		newZonObj.value = varType
@@ -71,10 +78,15 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 		newZonObj.name = varName
 		newZonObj.formatGroup = createFormatGroup("formatting/modifier")
 		parentZon.children.append(newZonObj)
+	elif (varType == "item"):
+		newZonObj = zonObject()
+		newZonObj.name = varName
+		newZonObj.children = readFormatFile("formatting/base_types/item.txt").children
+		parentZon.children.append(newZonObj)
 	elif (varType == "},"):
 		return
 	else:
-		print("Formatter Read Error: could not interperet the varType:" + str(varType))
+		print("Formatter Read Error: could not interperet the varType: " + str(varType))
 
 def readZonObject(lineList, startingLine, parentZon):
 	lineNumber = startingLine
