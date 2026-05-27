@@ -78,7 +78,7 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			childZonList.append(newZonFormatGroup)
 #MARK: MainWindow
 class MainWindow(QMainWindow):
-	def __init__(self, givenFormat):
+	def __init__(self):
 		super().__init__()
 		self.setWindowTitle("My App")
 		
@@ -92,7 +92,7 @@ class MainWindow(QMainWindow):
 		self.filename = "test" # define this here so it could be changed at another time
 		self.zonTypeDropdown = QComboBox()
 		self.zonTypeDropdown.addItem("")
-		self.zonTypeDropdown.addItems(["formatting/base_types/item.txt", "formatting/base_types/block.txt"])
+		self.zonTypeDropdown.addItems(createFormatGroup("formatting/base_types"))
 		self.zonTypeDropdown.currentTextChanged.connect(lambda: self.setScrollAreaLayout(scrollBar))
 		editorLayout.addWidget(self.zonTypeDropdown)
 

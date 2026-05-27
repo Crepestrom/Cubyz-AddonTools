@@ -124,7 +124,7 @@ def readFormatFile(filePath): # returns the format file in a code readable way
 		readFormatZon(documentLines, 0, CurrentZonObject)
 	return CurrentZonObject
 
-def createFormatGroup(filePath):
+def createFormatGroup(filePath :str):
 	specificFormatList = []
 	for name in os.listdir(filePath):
 		specificFormatList.append(filePath + "/"  + name)

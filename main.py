@@ -14,15 +14,13 @@ import os
 #textOBJ.children = [zonValue(), zonObject(), zonArray()]
 #writeGivenZonObjectToFile(filepath, textOBJ)
 
-ItemZonFormat = readFormatFile("formatting/base_types/block.txt")
-
 print("running app")
 
 #filename = "test4"
 #filepath = "Output/" + filename + ".zig.zon"
 
 app = QApplication(sys.argv)
-window = MainWindow(ItemZonFormat.children)
+window = MainWindow()
 window.show()
 #print(window.readEditorOutputZon())
 app.exec()
