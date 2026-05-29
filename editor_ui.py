@@ -14,8 +14,10 @@ from PyQt6.QtWidgets import (
 	QLineEdit,
 	QLabel,
 	QComboBox,
-	QScrollArea
+	QScrollArea,
+	QFileDialog,
 )
+from pathlib import Path
 
 class Color(QWidget):
 	def __init__(self, color):
@@ -78,9 +80,12 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			childZonList.append(newZonFormatGroup)
 #MARK: MainWindow
 class MainWindow(QMainWindow):
-	def __init__(self, givenFormat):
+	def __init__(self):
 		super().__init__()
 		self.setWindowTitle("My App")
+		
+		self.cubyzPath = ""
+		self.getCubyzDirectoryDialog()
 		
 		self.editorVarsList = []
 		scrollBar = QScrollArea()
@@ -110,6 +115,53 @@ class MainWindow(QMainWindow):
 		widget = QWidget()
 		widget.setLayout(editorLayout)
 		self.setCentralWidget(widget)
+		self.getItemList()
+		
+
+	def getCubyzDirectoryDialog(self):
+		dialog = QFileDialog(self)
+		dialog.setDirectory(r'C:\Downloads')
+		dialog.setFileMode(QFileDialog.FileMode.Directory)
+		dialog.setViewMode(QFileDialog.ViewMode.List)
+		if dialog.exec():
+			print(dialog.directory().path())
+			self.cubyzPath = dialog.directory().path()
+
+	def getItemList(self):
+		self.itemList = []
+		pathSearching = self.cubyzPath + "/assets/cubyz/items"
+		with os.scandir(pathSearching) as list:
+			for thing in list:
+				if thing.is_file():
+					if thing.name == "_migrations.zig.zon": continue
+					self.itemList.append(thing)
+				elif thing.is_dir():
+					if thing.name == "textures": continue
+					self.searchThroughChildren(thing.path, self.itemList)
+				else:
+					print("Error in getting item list: found a weird filetype")
+		pathSearching = self.cubyzPath + "/assets/cubyz/blocks"
+		with os.scandir(pathSearching) as list:
+			for thing in list:
+				if thing.is_file():
+					if thing.name == "_migrations.zig.zon": continue
+					self.itemList.append(thing)
+				elif thing.is_dir():
+					if thing.name == "textures": continue
+					self.searchThroughChildren(thing.path, self.itemList)
+				else:
+					print("Error in getting item list: found a weird filetype")
+
+	def searchThroughChildren(self, path, listToAppendTo):
+		with os.scandir(path) as list:
+			for thing in list:
+				if thing.is_file():
+					listToAppendTo.append(thing)
+				elif thing.is_dir():
+					self.searchThroughChildren(thing.path, listToAppendTo)
+				else:
+					print("Error in getting item list: found a weird filetype")
+
 
 	def setScrollAreaLayout(self, ScrollObj):
 
@@ -222,7 +274,7 @@ class uiZonArray():
 		txtInputsLayout = QHBoxLayout()
 		self.txtInputList = []
 		self.createSingleArrayInput(defaultText, txtInputsLayout)
-        
+		
 		self.name = name
 		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
 		namelabel = QLabel(name + " = ")

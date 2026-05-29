@@ -72,6 +72,7 @@ class zonValue(): # .something = "value",
 
 		return tempListBuffer
 
+# used only for translating from formatting files
 class formatGroupZonMulti():
 
 	name = "ErrorMissingName"
