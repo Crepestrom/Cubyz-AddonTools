@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
 		
 		self.filename = "test" # define this here so it could be changed at another time
 		self.zonTypeDropdown = QComboBox()
+		self.zonTypeDropdown.setPlaceholderText("Select a Format")
 		self.zonTypeDropdown.addItem("")
 		self.zonTypeDropdown.addItems(["formatting/base_types/item.txt", "formatting/base_types/block.txt", "formatting/base_types/recipie.txt"])
 		self.zonTypeDropdown.currentTextChanged.connect(lambda: self.setScrollAreaLayout(scrollBar))
@@ -117,8 +118,23 @@ class MainWindow(QMainWindow):
 
 			if isinstance(childButton, uiTxtInputZonValue):
 				self.addZonValue(childButton, returnZon)
+			if isinstance(childButton, uiComboBoxZonValue):
+				if childButton.comboBox.currentText() == "": continue
+				newZonObj = zonValue()
+				newZonObj.value = childButton.comboBox.currentText()
+				newZonObj.name = childButton.name
+				returnZon.children.append(newZonObj)
 			if isinstance(childButton, uiTxtInputZonArray):
 				self.addZonArray(childButton, returnZon)
+			if isinstance(childButton, uiComboBoxZonArray):
+				newZonObj = zonArray()
+				newZonObj.children = []
+				for childComboBox in childButton.comboBoxList:
+					if childComboBox.currentText() == "": continue
+					newZonObj.children.append(childComboBox.currentText())
+				if newZonObj.children.__len__() == 0: return
+				newZonObj.name = childButton.name
+				returnZon.children.append(newZonObj)
 			if isinstance(childButton, uiZonObject):
 				self.addZonObj(childButton, returnZon)
 			if isinstance(childButton, uiFormatGroupZonMulti):
@@ -133,7 +149,12 @@ class MainWindow(QMainWindow):
 				newZonObj.children = [newBaseZonObj]
 				returnZon.children.append(newZonObj)
 			if isinstance(childButton, uiRecipieZon):
-				newZonObj = zonObject()
+				newBaseZonObj = baseZonObject()
+				newBaseZonObj.children = []
+				for recipie in childButton.children:
+					self.recurseReadChildren(recipie, newBaseZonObj)
+				returnZon.children.append(newBaseZonObj)
+			
 
 	
 	def addZonValue(self, childButton, returnZon):

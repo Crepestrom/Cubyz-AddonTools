@@ -174,15 +174,15 @@ class uiComboBoxZonArray():
 
 	def addZonArrayInput(self, name, baseParentLayout, defaultText, givenList):
 		self.givenList = givenList
-		comboBoxLayout = QHBoxLayout()
+		self.comboBoxLayout = QHBoxLayout()
 		self.comboBoxList = []
-		self.createSingleArrayInput(defaultText, comboBoxLayout)
+		self.createSingleArrayInput(defaultText, self.comboBoxLayout)
 		
 		self.name = name
 		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
 		namelabel = QLabel(name + " = ")
 		lineLayout.addWidget(namelabel)
-		lineLayout.addLayout(comboBoxLayout)
+		lineLayout.addLayout(self.comboBoxLayout)
 
 		baseParentLayout.addLayout(lineLayout)
 
@@ -285,45 +285,52 @@ class uiRecipieZon():
 	def addRecipieInput(self, baseParentLayout, listOfItems):
 		self.childUiLayout = QVBoxLayout()
 
+		self.itemFileList = listOfItems # MARK: WIP add reading to addon support
 		self.itemNameList = []
 		for selectableItem in listOfItems:
-			self.itemNameList.append(selectableItem.name)
+			self.itemNameList.append("cubyz:" + selectableItem.name[:-8]) # removes .zig.zon from filenames
 		
 		self.addSingleRecipieInput(baseParentLayout)
 
 	def addSingleRecipieInput(self, baseParentLayout):
-		self.uiRecipieList = []
+		uiRecipieList = []
 		recipieLayout = QVBoxLayout()
 		recipieLayout.widget
 
 		inputUi = uiComboBoxZonArray()
 		inputUi.addZonArrayInput("input", recipieLayout, "pick a item", self.itemNameList)
 		inputUi.updateParentFunction = (lambda: self.checkUiChildren(recipieLayout))
-		self.uiRecipieList.append(inputUi)
+		uiRecipieList.append(inputUi)
 
 		outputUi = uiComboBoxZonValue()
 		outputUi.addZonValueInput("output", recipieLayout, "pick a item", self.itemNameList)
 		outputUi.comboBox.currentTextChanged.connect(lambda: self.checkUiChildren(recipieLayout))
-		self.uiRecipieList.append(outputUi)
+		uiRecipieList.append(outputUi)
 
+		self.children.append(uiRecipieList)
 		baseParentLayout.addLayout(recipieLayout)
 	
 	def checkUiChildren(self, parentLayout):
 		
 		widgetsRemovalList = []
+		listRemovalList = []
 
-		for i in range(int(self.uiRecipieList.__len__()/2)):
-			childInputs = self.uiRecipieList[i*2]
+		for i in range(self.children.__len__()):
+			childInputs = self.children[i][0]
 			inputBool = (childInputs.comboBoxList[0].currentText() == "")
 
-			childOutputs = self.uiRecipieList[i*2+1].comboBox
+			childOutputs = self.children[i][1].comboBox
 			outputBool = (childOutputs.currentText() == "")
+
 			if (inputBool) and (outputBool) and (i + 1 == parentLayout.count()):
-				widgetsRemovalList.append(childInputs)
+				widgetsRemovalList.append(self.children[i][0].comboBoxLayout)
 				widgetsRemovalList.append(childOutputs)
+				listRemovalList.append(self.children[i])
 			else:
-				if (i + 1 == int(self.uiRecipieList.__len__()/2)): self.addSingleRecipieInput(parentLayout)
+				if (i + 1 == self.children.__len__()): self.addSingleRecipieInput(parentLayout)
 		
 		for widget in widgetsRemovalList:
-			self.uiRecipieList.remove(widget)
 			widget.deleteLater()
+		
+		for listToRemove in listRemovalList:
+			self.children.remove(listToRemove)
