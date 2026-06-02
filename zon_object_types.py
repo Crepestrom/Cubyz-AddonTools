@@ -72,10 +72,16 @@ class zonValue(): # .something = "value",
 
 		return tempListBuffer
 
+# MARK: UiZons
+# used only for translating from formatting files
+# never used when reading from .zig.zon files
 class formatGroupZonMulti():
 
 	name = "ErrorMissingName"
 	formatGroup = []
 	children = []
+
+class recipieZon():
+	name = "ErrorMissingName" # not used just defined so i can sort by classes
 
 print("imported zon_object_types.py")
