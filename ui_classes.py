@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (
 	QComboBox,
 	QScrollArea,
 	QFileDialog,
+	QCheckBox
 )
 from pathlib import Path
 
@@ -85,6 +86,29 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 
 #MARK: UiClasses
 # smaller classes for ui
+
+class uiBoolZonValue():
+
+	name = "ErrorNotDefined"
+	checkBox = None
+	defaultValue = False
+
+	def addZonValueInput(self, name, baseParentLayout, defaultText):
+		txtInputsLayout = QHBoxLayout()
+		
+		self.name = name
+		self.checkBox = QCheckBox()
+		if self.defaultValue: self.checkBox.setCheckState(Qt.CheckState.Checked) 
+		else: self.checkBox.setCheckState(Qt.CheckState.Unchecked)
+		txtInputsLayout.addWidget(self.checkBox)
+
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel(name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(txtInputsLayout)
+
+		baseParentLayout.addLayout(lineLayout)
+
 class uiTxtInputZonValue():
 
 	name = "ErrorNotDefined"
