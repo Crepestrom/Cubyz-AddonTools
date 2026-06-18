@@ -116,25 +116,9 @@ class MainWindow(QMainWindow):
 		for i in range(givenList.__len__()):
 			childButton = givenList[i]
 
-			if isinstance(childButton, uiTxtInputZonValue):
-				self.addZonValue(childButton, returnZon)
-			if isinstance(childButton, uiComboBoxZonValue):
-				if childButton.comboBox.currentText() == "": continue
-				newZonObj = zonValue()
-				newZonObj.value = childButton.comboBox.currentText()
-				newZonObj.name = childButton.name
-				returnZon.children.append(newZonObj)
-			if isinstance(childButton, uiTxtInputZonArray):
-				self.addZonArray(childButton, returnZon)
-			if isinstance(childButton, uiComboBoxZonArray):
-				newZonObj = zonArray()
-				newZonObj.children = []
-				for childComboBox in childButton.comboBoxList:
-					if childComboBox.currentText() == "": continue
-					newZonObj.children.append(childComboBox.currentText())
-				if newZonObj.children.__len__() == 0: return
-				newZonObj.name = childButton.name
-				returnZon.children.append(newZonObj)
+
+			self.checkZonValues(childButton, returnZon)
+
 			if isinstance(childButton, uiZonObject):
 				self.addZonObj(childButton, returnZon)
 			if isinstance(childButton, uiFormatGroupZonMulti):
@@ -154,8 +138,25 @@ class MainWindow(QMainWindow):
 				for recipie in childButton.children:
 					self.recurseReadChildren(recipie, newBaseZonObj)
 				returnZon.children.append(newBaseZonObj)
-			
+	
+	def checkZonValues(self, childButton, returnZon): # seperated to make code cleaner to read
 
+		if isinstance(childButton, uiTxtInputZonValue):
+			self.addZonValue(childButton, returnZon)
+			return
+		if isinstance(childButton, uiComboBoxZonValue):
+			if childButton.comboBox.currentText() == "": return
+			newZonObj = zonValue()
+			newZonObj.value = childButton.comboBox.currentText()
+			newZonObj.name = childButton.name
+			returnZon.children.append(newZonObj)
+			return
+		if isinstance(childButton, uiBoolZonValue):
+			if (childButton.checkBox.isChecked() == childButton.defaultValue): return
+			newZonObj = zonValue()
+			newZonObj.value = str(childButton.checkBox.isChecked()).lower()
+			newZonObj.name = childButton.name
+			returnZon.children.append(newZonObj)
 	
 	def addZonValue(self, childButton, returnZon):
 		if childButton.txtInput.text() == "": return
