@@ -152,12 +152,11 @@ class MainWindow(QMainWindow):
 			returnZon.children.append(newZonObj)
 			return
 		if isinstance(childButton, uiBoolZonValue):
-			if childButton.txtInput.text() == "": return
+			if (childButton.checkBox.isChecked() == childButton.defaultValue): return
 			newZonObj = zonValue()
-			newZonObj.value = childButton.txtInput.text()
+			newZonObj.value = str(childButton.checkBox.isChecked()).lower()
 			newZonObj.name = childButton.name
 			returnZon.children.append(newZonObj)
-			return
 	
 	def addZonValue(self, childButton, returnZon):
 		if childButton.txtInput.text() == "": return

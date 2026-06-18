@@ -68,7 +68,7 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 		newZonObj.name = varName
 		newZonObj.children = [varType]
 		parentZon.children.append(newZonObj)
-	elif (varType.isdecimal()) or (is_float(varType)) or (varType == "image.png") or (varType == ".tag") or (varType == "true") or (varType == "false") or (varType == "0x000000") or (varType == "cubyz:no_rotation"):
+	elif (varType.isdecimal()) or (is_float(varType)) or (varType == "image.png") or (varType == ".tag") or (varType == "0x000000") or (varType == "cubyz:no_rotation"):
 		newZonObj = zonValue()
 		newZonObj.name = varName
 		newZonObj.value = varType
@@ -77,6 +77,11 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 		newZonObj = formatGroupZonMulti()
 		newZonObj.name = varName
 		newZonObj.formatGroup = createFormatGroup("formatting/modifier")
+		parentZon.children.append(newZonObj)
+	elif (varType == "true") or (varType == "false"):
+		newZonObj = boolZon()
+		newZonObj.name = varName
+		newZonObj.baseValue = bool(varType)
 		parentZon.children.append(newZonObj)
 	elif (varType == "item"):
 		newZonObj = zonObject()

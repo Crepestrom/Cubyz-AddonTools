@@ -68,6 +68,11 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			newZonValue = uiTxtInputZonValue()
 			newZonValue.addZonValueInput(child.name, baseParentLayout, child.value)
 			childZonList.append(newZonValue)
+		if isinstance(child, boolZon):
+			newZonValue = uiBoolZonValue()
+			newZonValue.defaultValue = child.defaultValue
+			newZonValue.addZonValueInput(child.name, baseParentLayout)
+			childZonList.append(newZonValue)
 		elif isinstance(child, zonArray):
 			newZonArray = uiTxtInputZonArray()
 			newZonArray.addZonArrayInput(child.name, baseParentLayout, child.children[0])
@@ -93,7 +98,7 @@ class uiBoolZonValue():
 	checkBox = None
 	defaultValue = False
 
-	def addZonValueInput(self, name, baseParentLayout, defaultText):
+	def addZonValueInput(self, name, baseParentLayout):
 		txtInputsLayout = QHBoxLayout()
 		
 		self.name = name

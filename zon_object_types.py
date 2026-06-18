@@ -84,4 +84,8 @@ class formatGroupZonMulti():
 class recipieZon():
 	name = "ErrorMissingName" # not used just defined so i can sort by classes
 
+class boolZon():
+	name = "ErrorMissingName" # not used just defined so i can sort by classes
+	defaultValue = True
+
 print("imported zon_object_types.py")
