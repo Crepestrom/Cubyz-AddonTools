@@ -2,9 +2,12 @@ import os
 
 cubyzListofItems = []
 cubyzBlockList = []
+cubyzSbbList = []
+cubyzBlpList = []
 
+#MARK: blocks and items
 def refreshCubyzItemList(cubyzPath):
-	cubyzListofItems = []
+	cubyzListofItems = [] # clears the array so that it can be reused
 	pathSearching = cubyzPath + "/assets/cubyz/items"
 	with os.scandir(pathSearching) as list:
 		for thing in list:
@@ -30,18 +33,6 @@ def refreshCubyzItemList(cubyzPath):
 
 def refreshCubyzBlockList(cubyzPath):
 	cubyzBlockList = []
-	pathSearching = cubyzPath + "/assets/cubyz/items"
-	with os.scandir(pathSearching) as list:
-		for thing in list:
-			if thing.is_file():
-				if thing.name == "_migrations.zig.zon": continue
-				if thing.name == "_defaults.zig.zon": continue
-				cubyzListofItems.append(thing)
-			elif thing.is_dir():
-				if thing.name == "textures": continue
-				searchThroughChildren(thing.path, cubyzBlockList)
-			else:
-				print("Error in getting item list: found a weird filetype")
 	pathSearching = cubyzPath + "/assets/cubyz/blocks"
 	with os.scandir(pathSearching) as list:
 		for thing in list:
@@ -51,7 +42,7 @@ def refreshCubyzBlockList(cubyzPath):
 				cubyzBlockList.append(thing)
 			elif thing.is_dir():
 				if thing.name == "textures": continue
-				searchThroughChildren(thing.path, cubyzListofItems)
+				searchThroughChildren(thing.path, cubyzBlockList)
 			else:
 				print("Error in getting item from blocks list: found a weird filetype")
 
@@ -66,10 +57,68 @@ def searchThroughChildren(path, listToAppendTo):
 			else:
 				print("Error in getting child list: found a weird filetype")
 
+#MARK: Sbb and Blp
+
+def refreshCubyzSbbList(cubyzPath):
+	cubyzSbbList = []
+	pathSearching = cubyzPath + "/assets/cubyz/sbb"
+	with os.scandir(pathSearching) as list:
+		for thing in list:
+			if thing.is_file():
+				if os.path.splitext(thing.path) != ".zig.zon": continue
+				cubyzSbbList.append(thing)
+			elif thing.is_dir():
+				if thing.name == "textures": continue
+				searchThroughChildrenSbb(thing.path, cubyzSbbList)
+			else:
+				print("Error in getting item from sbb list: found a weird filetype")
+
+def searchThroughChildrenSbb(path, listToAppendTo):
+	with os.scandir(path) as list:
+		for thing in list:
+			if thing.is_file():
+				if os.path.splitext(thing.path) != ".zig.zon": continue
+				listToAppendTo.append(thing)
+			elif thing.is_dir():
+				searchThroughChildrenSbb(thing.path, listToAppendTo)
+			else:
+				print("Error in getting child list: found a weird filetype")
+
+
+def refreshCubyzBlpList(cubyzPath):
+	cubyzBlpList = []
+	pathSearching = cubyzPath + "/assets/cubyz/sbb"
+	with os.scandir(pathSearching) as list:
+		for thing in list:
+			if thing.is_file():
+				if os.path.splitext(thing.path) != ".blp": continue
+				cubyzBlpList.append(thing)
+			elif thing.is_dir():
+				searchThroughChildrenBlp(thing.path, cubyzBlpList)
+			else:
+				print("Error in getting item from sbb list: found a weird filetype")
+
+def searchThroughChildrenBlp(path, listToAppendTo):
+	with os.scandir(path) as list:
+		for thing in list:
+			if thing.is_file():
+				if os.path.splitext(thing.path) != ".blp": continue
+				listToAppendTo.append(thing)
+			elif thing.is_dir():
+				searchThroughChildrenBlp(thing.path, listToAppendTo)
+			else:
+				print("Error in getting child list: found a weird filetype")
+
+
+# end of cases	
+
+
 def RefreshAllLists(cubyzPath):
 
 	refreshCubyzItemList(cubyzPath)
 	refreshCubyzBlockList(cubyzPath)
+	refreshCubyzSbbList(cubyzPath)
+	refreshCubyzBlpList(cubyzPath)
 
 
 def getItemList():
@@ -77,3 +126,9 @@ def getItemList():
 
 def getBlockList():
 	return cubyzBlockList
+
+def getSbbList():
+	return cubyzSbbList
+
+def getBlpList():
+	return cubyzBlpList
