@@ -7,7 +7,7 @@ cubyzBlpList = []
 
 #MARK: blocks and items
 def refreshCubyzItemList(cubyzPath):
-	cubyzListofItems = [] # clears the array so that it can be reused
+	cubyzListofItems.clear() # clears the array so that it can be reused
 	pathSearching = cubyzPath + "/assets/cubyz/items"
 	with os.scandir(pathSearching) as list:
 		for thing in list:
@@ -32,7 +32,7 @@ def refreshCubyzItemList(cubyzPath):
 				print("Error in getting item from blocks list: found a weird filetype")
 
 def refreshCubyzBlockList(cubyzPath):
-	cubyzBlockList = []
+	cubyzBlockList.clear()
 	pathSearching = cubyzPath + "/assets/cubyz/blocks"
 	with os.scandir(pathSearching) as list:
 		for thing in list:
@@ -60,7 +60,7 @@ def searchThroughChildren(path, listToAppendTo):
 #MARK: Sbb and Blp
 
 def refreshCubyzSbbList(cubyzPath):
-	cubyzSbbList = []
+	cubyzSbbList.clear()
 	pathSearching = cubyzPath + "/assets/cubyz/sbb"
 	with os.scandir(pathSearching) as list:
 		for thing in list:
@@ -86,7 +86,7 @@ def searchThroughChildrenSbb(path, listToAppendTo):
 
 
 def refreshCubyzBlpList(cubyzPath):
-	cubyzBlpList = []
+	cubyzBlpList.clear()
 	pathSearching = cubyzPath + "/assets/cubyz/sbb"
 	with os.scandir(pathSearching) as list:
 		for thing in list:
@@ -122,6 +122,9 @@ def RefreshAllLists(cubyzPath):
 
 
 def getItemList():
+	print("testing1` ")
+	print(cubyzListofItems)
+	print("testing2` ")
 	return cubyzListofItems
 
 def getBlockList():

@@ -78,12 +78,24 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			readFormat(child.children, newZonObject.childUiLayout, newZonObject.children)
 			childZonList.append(newZonObject)
 		if isinstance(child, recipieZon):
+			print(reference_lists.getItemList())
 			newUI = uiRecipieZon()
 			newUI.addRecipieInput(baseParentLayout, reference_lists.getItemList())
 			childZonList.append(newUI)
+		if isinstance(child, formatGroupZonMulti):
+			newUI = uiFormatGroupZonMulti()
+			newUI.addFormatGroupInput(baseParentLayout, child.name, child.formatGroup)
+			childZonList.append(newUI)
 
 
-#MARK: UiClasses
+#MARK: --------UiClasses
+
+
+
+
+
+
+# MARK: Value
 # smaller classes for ui
 class uiTxtInputZonValue():
 
@@ -126,6 +138,8 @@ class uiComboBoxZonValue():
 		lineLayout.addLayout(inputsLayout)
 
 		baseParentLayout.addLayout(lineLayout)
+
+# MARK: Array
 
 class uiTxtInputZonArray():
 
@@ -214,6 +228,8 @@ class uiComboBoxZonArray():
 		if self.updateParentFunction: #lets this weird structure update a parent
 			self.updateParentFunction()
 
+# MARK: ZonObject
+
 class uiZonObject():
 
 	name = "ErrorNotDefined"
@@ -231,6 +247,8 @@ class uiZonObject():
 		lineLayout.addLayout(self.childUiLayout)
 
 		baseParentLayout.addLayout(lineLayout)
+
+# MARK: Specialty
 
 class uiFormatGroupZonMulti():
 	name = "ErrorNotDefined"
@@ -334,3 +352,51 @@ class uiRecipieZon():
 		
 		for listToRemove in listRemovalList:
 			self.children.remove(listToRemove)
+
+class uiSbb():
+	name = "ErrorNotDefined"
+	givenBlps = []
+	givenBlpNames = []
+	children = []
+
+	def addInput(self, name, baseParentLayout, givenBlps):
+		print("added format group input")
+		self.childUiLayout = QVBoxLayout()
+		self.name = name
+		self.givenBlps = givenBlps
+		for selectableItem in givenBlps:
+			self.givenBlpNames.append("cubyz:" + selectableItem.name[:-4]) # removes .blp from filenames
+		self.createDropdownInput(givenBlps, self.childUiLayout)
+		
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel(name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(self.childUiLayout)
+
+		baseParentLayout.addLayout(lineLayout)
+
+	def createDropdownInput(self, givenBlps, parentLayout):
+		dropdownInput = QComboBox()
+		
+		dropdownInput.addItem("")
+		dropdownInput.addItems(givenBlps)
+		dropdownInput.currentTextChanged.connect(lambda: self.checkChildren(parentLayout))
+		self.dropdownBox = (dropdownInput)
+
+		parentLayout.addWidget(dropdownInput)
+	
+	def checkChildren(self, parentLayout):
+		removalList = []
+		for i in range(parentLayout.count()):
+			removalList.append(parentLayout.itemAt(i).layout())
+
+		self.children = []
+		for thing in removalList:
+			deleteWithChildren(thing)
+		
+		childUiZonLayout = QVBoxLayout()# we seperate it like this so that the children can be deleted without the dropdown deleting itself
+		parentLayout.addLayout(childUiZonLayout)
+
+		text = self.dropdownBox.currentText()
+		if text != "":
+			readFormat(readFormatFile(text).children, parentLayout, self.children)
