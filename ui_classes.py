@@ -96,7 +96,7 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 
 
 # MARK: Value
-# smaller classes for ui
+# picks a single value to be inputed
 class uiTxtInputZonValue():
 
 	name = "ErrorNotDefined"
@@ -121,6 +121,34 @@ class uiComboBoxZonValue():
 
 	name = "ErrorNotDefined"
 	comboBox = None
+	givenList = []
+	nameList = []
+
+	def addZonValueInput(self, name, baseParentLayout, defaultText, givenList):
+		inputsLayout = QHBoxLayout()
+		
+		self.givenList = givenList
+		for selectableItem in self.givenList:
+			self.NameList.append("cubyz:" + selectableItem.name[:-8]) # removes .zig.zon from filenames
+		
+		self.name = name
+		self.comboBox = QComboBox()
+		self.comboBox.setPlaceholderText(defaultText)
+		self.comboBox.addItem("")
+		self.comboBox.addItems(self.NameList)
+		inputsLayout.addWidget(self.comboBox)
+
+		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
+		namelabel = QLabel(name + " = ")
+		lineLayout.addWidget(namelabel)
+		lineLayout.addLayout(inputsLayout)
+
+		baseParentLayout.addLayout(lineLayout)
+
+class uiBlockSelectionZonValue():
+
+	name = "ErrorNotDefined"
+	comboBox = None
 
 	def addZonValueInput(self, name, baseParentLayout, defaultText, givenList):
 		inputsLayout = QHBoxLayout()
@@ -138,7 +166,6 @@ class uiComboBoxZonValue():
 		lineLayout.addLayout(inputsLayout)
 
 		baseParentLayout.addLayout(lineLayout)
-
 # MARK: Array
 
 class uiTxtInputZonArray():
