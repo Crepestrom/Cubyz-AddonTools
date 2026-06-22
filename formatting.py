@@ -85,6 +85,9 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 		parentZon.children.append(newZonObj)
 	elif (varType == "},"):
 		return
+	elif (varType == "recipies"):
+		newZonObj = recipieZon()
+		parentZon.children.append(newZonObj)
 	else:
 		print("Formatter Read Error: could not interperet the varType: " + str(varType))
 
