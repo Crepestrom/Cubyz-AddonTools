@@ -121,21 +121,15 @@ class uiComboBoxZonValue():
 
 	name = "ErrorNotDefined"
 	comboBox = None
-	givenList = []
-	nameList = []
 
 	def addZonValueInput(self, name, baseParentLayout, defaultText, givenList):
 		inputsLayout = QHBoxLayout()
-		
-		self.givenList = givenList
-		for selectableItem in self.givenList:
-			self.NameList.append("cubyz:" + selectableItem.name[:-8]) # removes .zig.zon from filenames
 		
 		self.name = name
 		self.comboBox = QComboBox()
 		self.comboBox.setPlaceholderText(defaultText)
 		self.comboBox.addItem("")
-		self.comboBox.addItems(self.NameList)
+		self.comboBox.addItems(givenList)
 		inputsLayout.addWidget(self.comboBox)
 
 		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
