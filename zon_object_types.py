@@ -84,4 +84,8 @@ class formatGroupZonMulti():
 class recipieZon():
 	name = "ErrorMissingName" # not used just defined so i can sort by classes
 
+class blpSelect():
+	name = "ErrorMissingName"
+	children = []
+
 print("imported zon_object_types.py")

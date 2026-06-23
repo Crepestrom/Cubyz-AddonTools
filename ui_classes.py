@@ -374,7 +374,7 @@ class uiRecipieZon():
 		for listToRemove in listRemovalList:
 			self.children.remove(listToRemove)
 
-class uiSbb():
+class uiBlpSelect():
 	name = "ErrorNotDefined"
 	givenBlps = []
 	givenBlpNames = []

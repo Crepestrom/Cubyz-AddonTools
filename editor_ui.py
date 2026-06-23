@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
 		self.zonTypeDropdown = QComboBox()
 		self.zonTypeDropdown.setPlaceholderText("Select a Format")
 		self.zonTypeDropdown.addItem("")
-		self.zonTypeDropdown.addItems(["formatting/base_types/item.txt", "formatting/base_types/block.txt", "formatting/base_types/recipie.txt"])
+		self.zonTypeDropdown.addItems(["formatting/base_types/item.txt", "formatting/base_types/block.txt", "formatting/base_types/recipie.txt", "formatting/base_types/sbb.txt"])
 		self.zonTypeDropdown.currentTextChanged.connect(lambda: self.setScrollAreaLayout(scrollBar))
 		editorLayout.addWidget(self.zonTypeDropdown)
 
