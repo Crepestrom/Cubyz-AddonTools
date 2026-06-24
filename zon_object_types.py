@@ -84,7 +84,7 @@ class formatGroupZonMulti():
 class recipieZon():
 	name = "ErrorMissingName" # not used just defined so i can sort by classes
 
-class blpSelect():
+class blpSelectZon():
 	name = "ErrorMissingName"
 	children = []
 

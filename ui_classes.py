@@ -86,6 +86,10 @@ def readFormat(givenFormat, baseParentLayout, childZonList):
 			newUI = uiFormatGroupZonMulti()
 			newUI.addFormatGroupInput(baseParentLayout, child.name, child.formatGroup)
 			childZonList.append(newUI)
+		if isinstance(child, blpSelectZon):
+			newUI = uiBlpSelect()
+			newUI.addInput(baseParentLayout, child.name, reference_lists.getBlpList())
+			childZonList.append(newUI)
 
 
 #MARK: --------UiClasses
