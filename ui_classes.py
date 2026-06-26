@@ -384,14 +384,14 @@ class uiBlpSelect():
 	givenBlpNames = []
 	children = []
 
-	def addInput(self, name, baseParentLayout, givenBlps):
+	def addInput(self, baseParentLayout, name, givenBlps):
 		print("added format group input")
 		self.childUiLayout = QVBoxLayout()
 		self.name = name
 		self.givenBlps = givenBlps
 		for selectableItem in givenBlps:
 			self.givenBlpNames.append("cubyz:" + selectableItem.name[:-4]) # removes .blp from filenames
-		self.createDropdownInput(givenBlps, self.childUiLayout)
+		self.createDropdownInput(self.childUiLayout)
 		
 		lineLayout = QHBoxLayout()#item 1 is always the actual value object(s)
 		namelabel = QLabel(name + " = ")
@@ -400,28 +400,28 @@ class uiBlpSelect():
 
 		baseParentLayout.addLayout(lineLayout)
 
-	def createDropdownInput(self, givenBlps, parentLayout):
+	def createDropdownInput(self, parentLayout):
 		dropdownInput = QComboBox()
 		
 		dropdownInput.addItem("")
-		dropdownInput.addItems(givenBlps)
+		dropdownInput.addItems(self.givenBlpNames)
 		dropdownInput.currentTextChanged.connect(lambda: self.checkChildren(parentLayout))
 		self.dropdownBox = (dropdownInput)
 
 		parentLayout.addWidget(dropdownInput)
 	
 	def checkChildren(self, parentLayout):
-		removalList = []
+
+		widgetsRemovalList = []
+
 		for i in range(parentLayout.count()):
-			removalList.append(parentLayout.itemAt(i).layout())
-
-		self.children = []
-		for thing in removalList:
-			deleteWithChildren(thing)
+			childButton = parentLayout.itemAt(i).widget()
+			
+			if (childButton.currentText() == "") and (i + 1 != parentLayout.count()):
+				widgetsRemovalList.append(childButton)
+			elif (childButton.currentText() != "") and (i + 1 == parentLayout.count()):
+				self.createDropdownInput(parentLayout)
 		
-		childUiZonLayout = QVBoxLayout()# we seperate it like this so that the children can be deleted without the dropdown deleting itself
-		parentLayout.addLayout(childUiZonLayout)
-
-		text = self.dropdownBox.currentText()
-		if text != "":
-			readFormat(readFormatFile(text).children, parentLayout, self.children)
+		for widget in widgetsRemovalList:
+			self.txtInputList.remove(widget)
+			widget.deleteLater()

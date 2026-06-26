@@ -86,23 +86,30 @@ def searchThroughChildrenSbb(path, listToAppendTo):
 
 
 def refreshCubyzBlpList(cubyzPath):
+	print("finding blp")
 	cubyzBlpList.clear()
 	pathSearching = cubyzPath + "/assets/cubyz/sbb"
 	with os.scandir(pathSearching) as list:
+		print("fining blps 2")
+		print(list)
 		for thing in list:
 			if thing.is_file():
+				print("find")
+				print(os.path.splitext(thing.path))
 				if os.path.splitext(thing.path) != ".blp": continue
 				cubyzBlpList.append(thing)
 			elif thing.is_dir():
 				searchThroughChildrenBlp(thing.path, cubyzBlpList)
 			else:
 				print("Error in getting item from sbb list: found a weird filetype")
+	print("wasd")
+	print(cubyzBlpList)
 
 def searchThroughChildrenBlp(path, listToAppendTo):
 	with os.scandir(path) as list:
 		for thing in list:
 			if thing.is_file():
-				if os.path.splitext(thing.path) != ".blp": continue
+				if os.path.splitext(thing.path)[1] != ".blp": continue
 				listToAppendTo.append(thing)
 			elif thing.is_dir():
 				searchThroughChildrenBlp(thing.path, listToAppendTo)
@@ -134,4 +141,5 @@ def getSbbList():
 	return cubyzSbbList
 
 def getBlpList():
+	print(cubyzBlpList)
 	return cubyzBlpList

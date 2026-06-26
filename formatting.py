@@ -90,6 +90,7 @@ def createChildBasedOnInfo(varName, varType, parentZon): # determines how to int
 		parentZon.children.append(newZonObj)
 	elif (varType == "blp"):
 		newZonObj = blpSelectZon()
+		newZonObj.name = varName
 		parentZon.children.append(newZonObj)
 	else:
 		print("Formatter Read Error: could not interperet the varType: " + str(varType))
